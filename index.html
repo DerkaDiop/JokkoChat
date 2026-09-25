@@ -7,36 +7,41 @@
 </head>
 <body>
 
-    <h1>Bienvenue sur JokkoChat</h1>
-
-    <p>Discuter. Partager. Rester connectés.</p>
-    <h2>Créer un compte</h2>
-
-    <form action="menu.html">
-        <label for="nom">Nom :</label>
-        <input type="text" id="nom" name="nom">
+        <h1>🤝 JokkoChat</h1>
+        <p>Discutez, partagez et restez connectés avec JokkoChat.</p>
+         <h2 id="inscription">Créer un compte</h2>
+       <form action="menu.html" method="get">
+        <label for="nom">Nom d'utilisateur :</label>
+        <input type="text" id="nom" name="nom" placeholder="Entrez votre nom d'utilisateur" autocomplete="username" required>
         <br><br>
         <label for="email">Email :</label>
-        <input type="email" id="email" name="email">
+        <input type="email" id="email" name="email" placeholder="Entrez votre adresse email" autocomplete="email" required>
         <br><br>
         <label for="mot-de-passe">Mot de passe :</label>
-        <input type="password" id="mot-de-passe" name="mot-de-passe">
+        <input type="password" id="mot-de-passe" name="mot-de-passe" placeholder="Entrez votre mot de passe" autocomplete="new-password" required>
         <br><br>
         <label for="confirmation">Confirmer le mot de passe :</label>
-        <input type="password" id="confirmation" name="confirmation">
+        <input type="password" id="confirmation" name="confirmation" placeholder="Confirmez votre mot de passe" autocomplete="new-password" required>
         <br><br>
         <button type="submit">S'inscrire</button>
     </form>
-    <h2>Connexion</h2>
-    <form action="menu.html">
+    <p>
+         Déjà un compte ?
+        <a href="#connexion">Se connecter</a>
+    </p>
+         <h2 id="connexion">Connexion</h2>
+   <form action="menu.html" method="get">
         <label for="email-connexion">Email :</label>
-        <input type="email" id="email-connexion" name="email-connexion">
+       <input type="email" id="email-connexion" name="email-connexion" placeholder="Entrez votre adresse email" autocomplete="email" required>
         <br><br>
-        <label for="mot-de-passe-connexion">Mot de passe :</label>
-        <input type="password" id="mot-de-passe-connexion" name="mot-de-passe-connexion">
+       <label for="mot-de-passe-connexion">Mot de passe :</label>
+       <input type="password" id="mot-de-passe-connexion" name="mot-de-passe-connexion" placeholder="Entrez votre mot de passe" autocomplete="current-password" required>
         <br><br>
         <button type="submit">Se connecter</button>
-
     </form>
+   <p>
+    Pas encore de compte ?
+    <a href="#inscription">S'inscrire</a>
+    </p>
 </body>
 </html>
