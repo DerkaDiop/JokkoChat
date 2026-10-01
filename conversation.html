@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation - JokkoChat</title>
+</head>
+<body>
+<!-- Section 4. Conversation -->
+<section id="conversation">
+    <!-- En-tête de la conversation -->
+    <header class="chat-header">
+        <a href="contacts.html">☰</a>
+        <h2>👤 Ali</h2>
+        <small>🟢 En ligne</small>
+        <button id="btn-appel-audio">📞</button>
+        <button id="btn-appel-video">📹</button>
+        <button id="btn-options-chat">⋮</button>
+    </header>
+
+    <hr>
+
+    <!-- Zone principale : Liste de contacts + Zone de discussion -->
+    <div class="chat-body">
+        
+        <!-- Panneau latéral : Contacts -->
+        <aside class="sidebar">
+            <input type="text" placeholder="Rechercher...">
+            
+            <div class="active-user">
+                <span>👤 Ali</span>
+                <small>🟢 En ligne</small>
+            </div>
+
+            <!-- Liste des Contacts -->
+            <div class="contacts-list">
+                <h3>Contacts</h3>
+                <ul>
+                    <li>
+                        <span>👤 Ali</span>
+                        <small>🟢 En ligne</small>
+                    </li>
+                    <li>
+                        <span>👤 Fatou</span>
+                        <small>... En train d'écrire...</small>
+                    </li>
+                    <li>
+                        <span>👤 Moussa</span>
+                        <small>🔴 Hors-ligne</small>
+                    </li>
+                    <li>
+                        <span>👤 Awa</span>
+                        <small>🟢 En ligne</small>
+                    </li>
+                    <li>
+                        <span>👤 Ibrahim</span>
+                        <small>🔴 Hors-ligne</small>
+                    </li>
+                </ul>
+            </div>
+
+            
+        </aside>
+
+        <hr>
+
+        <!-- Zone de discussion principale -->
+        <main class="chat-area">
+            <!-- Historique des messages -->
+            <div class="messages-container">
+                <div class="message message-envoye">
+                    <span class="auteur">Moi</span>
+                    <span class="heure">10:16</span>
+                    <p>Bonjour ! 😊</p>
+                </div>
+
+                <div class="message message-recu">
+                    <span class="auteur">Ali</span>
+                    <span class="heure">10:17</span>
+                    <p>Comment ça va ?</p>
+                </div>
+
+                <div class="message message-envoye">
+                    <span class="auteur">Moi</span>
+                    <span class="heure">10:18</span>
+                    <p>Très bien, merci ! Et toi ?</p>
+                </div>
+
+                <div class="message message-recu">
+                    <span class="auteur">Ali</span>
+                    <span class="heure">10:19</span>
+                    <p>Ça va super ! Tu as vu l'image ?</p>
+                    <img src="paysage.jpg" alt="Image partagée par Ali">
+                </div>
+
+                <div class="message message-envoye">
+                    <span class="auteur">Moi</span>
+                    <span class="heure">10:20</span>
+                    <p>Oui, elle est géniale ! 👍</p>
+                </div>
+            </div>
+
+            <!-- Zone de saisie de message -->
+            <footer class="message-input-area">
+                <form action="#" method="post">
+                    <button type="button" id="btn-ajouter-media">+</button>
+                    <input type="text" placeholder="Écrire un message..." required>
+                    <button type="button" id="btn-emoji">😊</button>
+                    <button type="button" id="btn-vocal">🎙️</button>
+                    <button type="button" id="btn-image">🖼️</button>
+                    <button type="submit" id="btn-envoyer">✈️</button>
+                </form>
+            </footer>
+        </main>
+
+    </div>
+</section>
+</body>
+</html>
