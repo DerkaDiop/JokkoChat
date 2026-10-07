@@ -3,117 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conversation - JokkoChat</title>
+    <title>Mes conversations - JokkoChat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
 </head>
-<body>
-<!-- Section 4. Conversation -->
-<section id="conversation">
-    <!-- En-tête de la conversation -->
-    <header class="chat-header">
-        <a href="contacts.html">☰</a>
-        <h2>👤 Ali</h2>
-        <small>🟢 En ligne</small>
-        <button id="btn-appel-audio">📞</button>
-        <button id="btn-appel-video">📹</button>
-        <button id="btn-options-chat">⋮</button>
-    </header>
+<!-- data-type="contact" : la page affiche les conversations privées (voir js/script.js) -->
+<body class="page-app page-messagerie" data-type="contact">
 
-    <hr>
+    <!-- Barre latérale -->
+    <aside class="barre-laterale">
+        <div class="logo logo-clair">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Jokko<strong>Chat</strong></span>
+        </div>
 
-    <!-- Zone principale : Liste de contacts + Zone de discussion -->
-    <div class="chat-body">
-        
-        <!-- Panneau latéral : Contacts -->
-        <aside class="sidebar">
-            <input type="text" placeholder="Rechercher...">
-            
-            <div class="active-user">
-                <span>👤 Ali</span>
-                <small>🟢 En ligne</small>
+        <nav class="navigation">
+            <a href="menu.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+            <a href="conversation.html" class="actif"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+            <a href="contacts.html"><i class="fa-solid fa-user-group"></i><span>Contacts</span></a>
+            <a href="salons.html"><i class="fa-solid fa-users"></i><span>Salons</span></a>
+            <a href="messages-enregistres.html" class="masque-mobile"><i class="fa-solid fa-bookmark"></i><span>Enregistrés</span></a>
+            <a href="profil.html"><i class="fa-regular fa-user"></i><span>Profil</span></a>
+            <a href="parametres.html" class="masque-mobile"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
+        </nav>
+
+        <div class="utilisateur">
+            <div class="avatar"><span class="initiale-utilisateur">K</span><span class="pastille en-ligne"></span></div>
+            <div>
+                <p class="utilisateur-nom nom-utilisateur">Kader</p>
+                <p class="utilisateur-statut">En ligne</p>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn-deconnexion" data-deconnexion>
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </aside>
+
+    <main class="messagerie">
+
+        <!-- Liste des conversations (remplie par js/script.js) -->
+        <section class="liste-discussions">
+            <header class="liste-entete">
+                <h1>Conversations</h1>
+            </header>
+            <div class="recherche">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="filtre-discussions" placeholder="Rechercher une conversation..."
+                       aria-label="Rechercher une conversation">
+            </div>
+            <ul id="liste-discussions"></ul>
+        </section>
+
+        <!-- Discussion ouverte -->
+        <section class="chat">
+            <div class="chat-vide" id="chat-vide">
+                <i class="fa-regular fa-comments"></i>
+                <p>Sélectionnez une conversation pour commencer à discuter.</p>
             </div>
 
-            <!-- Liste des Contacts -->
-            <div class="contacts-list">
-                <h3>Contacts</h3>
-                <ul>
-                    <li>
-                        <span>👤 Ali</span>
-                        <small>🟢 En ligne</small>
-                    </li>
-                    <li>
-                        <span>👤 Fatou</span>
-                        <small>... En train d'écrire...</small>
-                    </li>
-                    <li>
-                        <span>👤 Moussa</span>
-                        <small>🔴 Hors-ligne</small>
-                    </li>
-                    <li>
-                        <span>👤 Awa</span>
-                        <small>🟢 En ligne</small>
-                    </li>
-                    <li>
-                        <span>👤 Ibrahim</span>
-                        <small>🔴 Hors-ligne</small>
-                    </li>
-                </ul>
+            <div class="chat-actif" id="chat-actif" hidden>
+                <header class="chat-entete">
+                    <a href="conversation.html" class="btn-retour" aria-label="Retour aux conversations">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div class="avatar" id="chat-avatar"></div>
+                    <div class="chat-titre">
+                        <div class="chat-titre-ligne">
+                            <h2 id="chat-nom"></h2>
+                            <span class="indicateurs" id="chat-indicateurs"></span>
+                        </div>
+                        <small id="chat-statut"></small>
+                    </div>
+                    <button type="button" class="btn-resumer" id="btn-resumer">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Résumer</span>
+                    </button>
+                    <button type="button" class="btn-icone" id="btn-options-discussion"
+                            aria-label="Options de la discussion" aria-haspopup="menu" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                </header>
+
+                <div class="messages" id="messages" aria-live="polite"></div>
+
+                <div class="zone-bas">
+                    <!-- Panneau d'emojis (rempli par js/script.js) -->
+                    <div class="panneau-emojis" id="panneau-emojis" hidden></div>
+
+                    <!-- Aperçu de l'image avant l'envoi -->
+                    <div class="apercu-image" id="apercu-image" hidden>
+                        <img id="apercu-image-img" alt="Image à envoyer">
+                        <button type="button" id="btn-retirer-image" aria-label="Retirer l'image">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <p class="erreur-saisie" id="erreur-saisie" role="alert" hidden></p>
+
+                    <form class="zone-saisie" id="form-message">
+                        <button type="button" class="btn-icone" id="btn-image" aria-label="Envoyer une image">
+                            <i class="fa-regular fa-image"></i>
+                        </button>
+                        <input type="file" id="fichier-image" accept="image/*" hidden>
+
+                        <!-- Vue unique : le prochain message ne pourra être ouvert qu'une fois -->
+                        <button type="button" class="btn-icone btn-vue-unique" id="btn-vue-unique"
+                                aria-pressed="false" aria-label="Vue unique"
+                                title="Vue unique : le prochain message ne pourra être ouvert qu'une fois">
+                            <span>1</span>
+                        </button>
+
+                        <input type="text" id="champ-message" placeholder="Écrire un message..."
+                               autocomplete="off" aria-label="Message">
+
+                        <!-- Barre affichée pendant l'enregistrement d'un vocal -->
+                        <div class="barre-enregistrement" id="barre-enregistrement" hidden>
+                            <button type="button" class="btn-icone" id="btn-annuler-vocal" aria-label="Annuler le message vocal">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                            <span class="point-rouge" aria-hidden="true"></span>
+                            <span id="duree-enregistrement" aria-live="off">0:00</span>
+                            <span class="texte-enregistrement">Enregistrement... (1 min max)</span>
+                        </div>
+
+                        <button type="button" class="btn-icone" id="btn-emoji" aria-label="Emojis"
+                                aria-expanded="false" aria-controls="panneau-emojis">
+                            <i class="fa-regular fa-face-smile"></i>
+                        </button>
+                        <button type="button" class="btn-icone" id="btn-micro" aria-label="Enregistrer un message vocal">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                        <button type="submit" class="btn-envoyer" aria-label="Envoyer">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
+        </section>
+    </main>
 
-            
-        </aside>
+    <!-- Fenêtre du résumé automatique -->
+    <dialog class="fenetre fenetre-resume" id="fenetre-resume" aria-labelledby="titre-resume">
+        <div class="resume-entete">
+            <h2 id="titre-resume"><i class="fa-solid fa-wand-magic-sparkles"></i> Résumé automatique</h2>
+            <button type="button" class="btn-fermer" id="btn-fermer-resume" aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="contenu-resume"></div>
+        <p class="resume-note">Résumé calculé dans le navigateur à partir des messages de la conversation.</p>
+    </dialog>
 
-        <hr>
+    <!-- Menu des options (message ou discussion), rempli par js/script.js -->
+    <div class="menu-flottant" id="menu-flottant" role="menu" hidden></div>
 
-        <!-- Zone de discussion principale -->
-        <main class="chat-area">
-            <!-- Historique des messages -->
-            <div class="messages-container">
-                <div class="message message-envoye">
-                    <span class="auteur">Moi</span>
-                    <span class="heure">10:16</span>
-                    <p>Bonjour ! 😊</p>
-                </div>
+    <!-- Petit message temporaire -->
+    <div class="toast" id="toast" role="status" hidden></div>
 
-                <div class="message message-recu">
-                    <span class="auteur">Ali</span>
-                    <span class="heure">10:17</span>
-                    <p>Comment ça va ?</p>
-                </div>
+    <!-- Fenêtre « Supprimer ? » -->
+    <dialog class="fenetre" id="fenetre-supprimer" aria-labelledby="supprimer-titre">
+        <h2 id="supprimer-titre">Supprimer le message ?</h2>
+        <p class="fenetre-texte" id="supprimer-texte"></p>
+        <div class="fenetre-choix">
+            <button type="button" class="btn btn-danger" id="btn-supprimer-tous">Supprimer pour tout le monde</button>
+            <button type="button" class="btn btn-danger-clair" id="btn-supprimer-moi">Supprimer pour moi</button>
+            <button type="button" class="btn btn-secondaire" id="btn-supprimer-annuler">Annuler</button>
+        </div>
+    </dialog>
 
-                <div class="message message-envoye">
-                    <span class="auteur">Moi</span>
-                    <span class="heure">10:18</span>
-                    <p>Très bien, merci ! Et toi ?</p>
-                </div>
-
-                <div class="message message-recu">
-                    <span class="auteur">Ali</span>
-                    <span class="heure">10:19</span>
-                    <p>Ça va super ! Tu as vu l'image ?</p>
-                    <img src="paysage.jpg" alt="Image partagée par Ali">
-                </div>
-
-                <div class="message message-envoye">
-                    <span class="auteur">Moi</span>
-                    <span class="heure">10:20</span>
-                    <p>Oui, elle est géniale ! 👍</p>
-                </div>
+    <!-- Fenêtre « Messages éphémères » -->
+    <dialog class="fenetre" id="fenetre-ephemere" aria-labelledby="ephemere-titre">
+        <form id="form-ephemere">
+            <h2 id="ephemere-titre"><i class="fa-solid fa-stopwatch"></i> Messages éphémères</h2>
+            <p class="fenetre-texte">
+                Les nouveaux messages (texte, images et vocaux) s'effaceront définitivement
+                pour tout le monde après le délai choisi.
+            </p>
+            <fieldset class="choix-ephemere">
+                <legend class="visuellement-cache">Délai avant l'effacement</legend>
+                <label><input type="radio" name="ephemere" value="0"> Désactivés</label>
+                <label><input type="radio" name="ephemere" value="lecture"> Après lecture <small>(15 secondes après avoir été lus)</small></label>
+                <label><input type="radio" name="ephemere" value="60"> 1 minute</label>
+                <label><input type="radio" name="ephemere" value="3600"> 1 heure</label>
+                <label><input type="radio" name="ephemere" value="86400"> 24 heures</label>
+                <label><input type="radio" name="ephemere" value="604800"> 7 jours</label>
+            </fieldset>
+            <div class="fenetre-actions">
+                <button type="button" class="btn btn-secondaire" id="btn-annuler-ephemere">Annuler</button>
+                <button type="submit" class="btn btn-principal">Enregistrer</button>
             </div>
+        </form>
+    </dialog>
 
-            <!-- Zone de saisie de message -->
-            <footer class="message-input-area">
-                <form action="#" method="post">
-                    <button type="button" id="btn-ajouter-media">+</button>
-                    <input type="text" placeholder="Écrire un message..." required>
-                    <button type="button" id="btn-emoji">😊</button>
-                    <button type="button" id="btn-vocal">🎙️</button>
-                    <button type="button" id="btn-image">🖼️</button>
-                    <button type="submit" id="btn-envoyer">✈️</button>
-                </form>
-            </footer>
-        </main>
+    <!-- Fenêtre d'un message à vue unique -->
+    <dialog class="fenetre fenetre-vue-unique" id="fenetre-vue-unique" aria-labelledby="vue-unique-titre">
+        <div class="resume-entete">
+            <h2 id="vue-unique-titre"><span class="icone-vue-unique">1</span> Vue unique</h2>
+            <button type="button" class="btn-fermer" id="btn-fermer-vue-unique" aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="bulle" id="contenu-vue-unique"></div>
+        <p class="resume-note">
+            Ce message sera effacé dès que vous fermerez cette fenêtre.
+            Une capture d'écran sera signalée à l'expéditeur.
+        </p>
+    </dialog>
 
-    </div>
-</section>
+    <!-- Visionneuse : image en grand -->
+    <dialog class="visionneuse" id="visionneuse">
+        <img id="visionneuse-image" alt="">
+    </dialog>
+
+    <script src="js/resume.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

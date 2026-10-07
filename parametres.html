@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - JokkoChat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+</head>
+<body class="page-app">
+
+    <!-- Barre latérale -->
+    <aside class="barre-laterale">
+        <div class="logo logo-clair">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Jokko<strong>Chat</strong></span>
+        </div>
+
+        <nav class="navigation">
+            <a href="menu.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+            <a href="conversation.html"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+            <a href="contacts.html"><i class="fa-solid fa-user-group"></i><span>Contacts</span></a>
+            <a href="salons.html"><i class="fa-solid fa-users"></i><span>Salons</span></a>
+            <a href="messages-enregistres.html" class="masque-mobile"><i class="fa-solid fa-bookmark"></i><span>Enregistrés</span></a>
+            <a href="profil.html"><i class="fa-regular fa-user"></i><span>Profil</span></a>
+            <a href="parametres.html" class="masque-mobile actif"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
+        </nav>
+
+        <div class="utilisateur">
+            <div class="avatar"><span class="initiale-utilisateur">K</span><span class="pastille en-ligne"></span></div>
+            <div>
+                <p class="utilisateur-nom nom-utilisateur">Kader</p>
+                <p class="utilisateur-statut">En ligne</p>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn-deconnexion" data-deconnexion>
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </aside>
+
+    <main class="contenu page-parametres">
+        <header class="contenu-entete">
+            <a href="profil.html" class="btn-retour" aria-label="Retour au profil">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1>Paramètres</h1>
+                <p>Les changements sont enregistrés automatiquement.</p>
+            </div>
+        </header>
+
+        <!-- Les réglages sont lus et enregistrés par js/script.js -->
+        <form id="form-parametres" class="reglages" novalidate>
+
+            <!-- Notifications -->
+            <section class="carte-reglages" aria-labelledby="titre-notifications">
+                <h2 id="titre-notifications"><i class="fa-solid fa-bell"></i> Notifications</h2>
+
+                <label class="reglage">
+                    <span class="reglage-texte">
+                        <strong>Son des nouveaux messages</strong>
+                        <small>Un petit son quand un message arrive. Pour couper une seule discussion, utilisez « Mettre en sourdine » dans son menu ⋮.</small>
+                    </span>
+                    <input type="checkbox" class="interrupteur" name="son" role="switch">
+                </label>
+            </section>
+
+            <!-- Confidentialité -->
+            <section class="carte-reglages" aria-labelledby="titre-confidentialite">
+                <h2 id="titre-confidentialite"><i class="fa-solid fa-shield-halved"></i> Confidentialité</h2>
+
+                <label class="reglage">
+                    <span class="reglage-texte">
+                        <strong>Accusés de lecture</strong>
+                        <small>Désactivés : vos contacts ne voient plus quand vous avez lu leurs messages, et vous ne voyez plus les coches violettes « lu » des leurs.</small>
+                    </span>
+                    <input type="checkbox" class="interrupteur" name="accusesLecture" role="switch">
+                </label>
+
+                <label class="reglage">
+                    <span class="reglage-texte">
+                        <strong>Messages éphémères par défaut</strong>
+                        <small>S'applique à toutes les discussions où vous n'avez pas choisi d'autre délai.</small>
+                    </span>
+                    <select name="ephemereDefaut" class="liste-choix">
+                        <option value="0">Désactivés</option>
+                        <option value="lecture">Après lecture</option>
+                        <option value="60">1 minute</option>
+                        <option value="3600">1 heure</option>
+                        <option value="86400">24 heures</option>
+                        <option value="604800">7 jours</option>
+                    </select>
+                </label>
+
+                <div class="reglage">
+                    <span class="reglage-texte">
+                        <strong>Captures d'écran</strong>
+                        <small>Toujours signalées à l'autre personne quand elles sont détectées, pour protéger ses messages. Ce réglage ne peut pas être désactivé.</small>
+                    </span>
+                    <i class="fa-solid fa-lock reglage-verrou" aria-label="Toujours activé"></i>
+                </div>
+            </section>
+
+            <!-- Fonctionnalités -->
+            <section class="carte-reglages" aria-labelledby="titre-fonctionnalites">
+                <h2 id="titre-fonctionnalites"><i class="fa-solid fa-wand-magic-sparkles"></i> Fonctionnalités</h2>
+
+                <label class="reglage">
+                    <span class="reglage-texte">
+                        <strong>Résumé automatique</strong>
+                        <small>Affiche le bouton « Résumer » dans les discussions et sur les messages longs.</small>
+                    </span>
+                    <input type="checkbox" class="interrupteur" name="resume" role="switch">
+                </label>
+            </section>
+
+            <!-- Apparence -->
+            <section class="carte-reglages" aria-labelledby="titre-apparence">
+                <h2 id="titre-apparence"><i class="fa-solid fa-palette"></i> Apparence</h2>
+
+                <!-- De simples boutons (et non des boutons radio) : le thème ne change
+                     que sur un clic, jamais avec les flèches du clavier -->
+                <div class="reglage reglage-colonne">
+                    <span class="reglage-texte" id="titre-theme">
+                        <strong>Thème</strong>
+                        <small>Le mode sombre s'applique seulement quand vous choisissez « Sombre ».</small>
+                    </span>
+                    <div class="choix-segmente" role="group" aria-labelledby="titre-theme">
+                        <button type="button" data-theme="clair" aria-pressed="false"><i class="fa-regular fa-sun"></i> Clair</button>
+                        <button type="button" data-theme="sombre" aria-pressed="false"><i class="fa-regular fa-moon"></i> Sombre</button>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        <!-- Stockage -->
+        <section class="carte-reglages" aria-labelledby="titre-stockage">
+            <h2 id="titre-stockage"><i class="fa-solid fa-database"></i> Stockage</h2>
+
+            <div class="reglage reglage-colonne">
+                <span class="reglage-texte">
+                    <strong id="stockage-utilise">Calcul...</strong>
+                    <small id="stockage-detail"></small>
+                </span>
+                <div class="jauge" role="progressbar" aria-labelledby="stockage-utilise"
+                     aria-valuemin="0" aria-valuemax="100" id="jauge-stockage">
+                    <span id="jauge-remplie"></span>
+                </div>
+                <small class="reglage-note">
+                    Sans serveur, tout est gardé dans ce navigateur, qui limite la place à environ 5 Mo.
+                    Les images et les vocaux en prennent le plus.
+                </small>
+            </div>
+
+            <div class="reglage-actions">
+                <button type="button" class="btn btn-danger-clair btn-auto" id="btn-effacer-messages">
+                    <i class="fa-solid fa-trash-can"></i> Effacer mes messages, images et vocaux
+                </button>
+                <button type="button" class="btn btn-secondaire btn-auto" id="btn-reinitialiser">
+                    <i class="fa-solid fa-rotate-left"></i> Réinitialiser l'application
+                </button>
+            </div>
+        </section>
+
+        <!-- Compte -->
+        <section class="carte-reglages" aria-labelledby="titre-compte">
+            <h2 id="titre-compte"><i class="fa-solid fa-user"></i> Compte</h2>
+
+            <a href="profil.html" class="reglage reglage-lien">
+                <span class="reglage-texte">
+                    <strong>Mon profil</strong>
+                    <small>Nom, email et informations personnelles</small>
+                </span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+            <a href="modifier-profil.html" class="reglage reglage-lien">
+                <span class="reglage-texte">
+                    <strong>Modifier le profil</strong>
+                    <small>Changer vos informations</small>
+                </span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </section>
+
+        <!-- Aide -->
+        <section class="carte-reglages" aria-labelledby="titre-aide">
+            <h2 id="titre-aide"><i class="fa-solid fa-circle-question"></i> Aide</h2>
+
+            <details class="question">
+                <summary>Comment supprimer ou masquer un message ?</summary>
+                <p>Passez sur le message et cliquez sur ⌄. « Masquer » le cache seulement chez vous.
+                   « Supprimer » propose « pour moi » (effacé définitivement de votre appareil)
+                   ou « pour tout le monde » (pour vos propres messages).</p>
+            </details>
+            <details class="question">
+                <summary>Qu'est-ce que la vue unique ?</summary>
+                <p>Activez le bouton ① avant d'envoyer : le message (texte, photo ou vocal)
+                   ne pourra être ouvert qu'une seule fois, puis il est effacé.</p>
+            </details>
+            <details class="question">
+                <summary>Comment fonctionnent les messages éphémères ?</summary>
+                <p>Dans une discussion, ouvrez le menu ⋮ puis « Messages éphémères ».
+                   Les nouveaux messages s'effacent pour tout le monde après le délai choisi.
+                   Le délai par défaut se règle ici, dans « Confidentialité ».</p>
+            </details>
+            <details class="question">
+                <summary>Les captures d'écran sont-elles détectées ?</summary>
+                <p>En partie seulement : JokkoChat repère les raccourcis clavier de capture
+                   (Impr. écran, Cmd + Maj + 3/4/5, Win + Maj + S) et prévient l'autre personne.
+                   Une capture faite sur téléphone ou avec une autre application ne peut pas être détectée.</p>
+            </details>
+        </section>
+
+        <a href="index.html" class="btn btn-danger-clair btn-deconnexion-page" data-deconnexion>
+            <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
+        </a>
+    </main>
+
+    <!-- Fenêtre de confirmation (stockage) -->
+    <dialog class="fenetre" id="fenetre-confirmer" aria-labelledby="confirmer-titre">
+        <h2 id="confirmer-titre"></h2>
+        <p class="fenetre-texte" id="confirmer-texte"></p>
+        <div class="fenetre-actions">
+            <button type="button" class="btn btn-secondaire" id="btn-confirmer-annuler">Annuler</button>
+            <button type="button" class="btn btn-danger" id="btn-confirmer-ok">Confirmer</button>
+        </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" hidden></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

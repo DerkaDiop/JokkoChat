@@ -1,47 +1,181 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>JokkoChat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JokkoChat - Connexion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
 </head>
-<body>
+<body class="page-auth">
 
-        <h1>🤝 JokkoChat</h1>
-        <p>Discutez, partagez et restez connectés avec JokkoChat.</p>
-         <h2 id="inscription">Créer un compte</h2>
-       <form action="menu.html" method="get">
-        <label for="nom">Nom d'utilisateur :</label>
-        <input type="text" id="nom" name="nom" placeholder="Entrez votre nom d'utilisateur" autocomplete="username" required>
-        <br><br>
-        <label for="email">Email :</label>
-        <input type="email" id="email" name="email" placeholder="Entrez votre adresse email" autocomplete="email" required>
-        <br><br>
-        <label for="mot-de-passe">Mot de passe :</label>
-        <input type="password" id="mot-de-passe" name="mot-de-passe" placeholder="Entrez votre mot de passe" autocomplete="new-password" required>
-        <br><br>
-        <label for="confirmation">Confirmer le mot de passe :</label>
-        <input type="password" id="confirmation" name="confirmation" placeholder="Confirmez votre mot de passe" autocomplete="new-password" required>
-        <br><br>
-        <button type="submit">S'inscrire</button>
-    </form>
-    <p>
-         Déjà un compte ?
-        <a href="#connexion">Se connecter</a>
-    </p>
-         <h2 id="connexion">Connexion</h2>
-   <form action="menu.html" method="get">
-        <label for="email-connexion">Email :</label>
-       <input type="email" id="email-connexion" name="email-connexion" placeholder="Entrez votre adresse email" autocomplete="email" required>
-        <br><br>
-       <label for="mot-de-passe-connexion">Mot de passe :</label>
-       <input type="password" id="mot-de-passe-connexion" name="mot-de-passe-connexion" placeholder="Entrez votre mot de passe" autocomplete="current-password" required>
-        <br><br>
-        <button type="submit">Se connecter</button>
-    </form>
-   <p>
-    Pas encore de compte ?
-    <a href="#inscription">S'inscrire</a>
-    </p>
+    <!-- Panneau de présentation (caché sur téléphone) -->
+    <aside class="auth-presentation">
+        <div class="logo logo-clair">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Jokko<strong>Chat</strong></span>
+        </div>
+        <h1>Discutez. Partagez.<br>Restez connectés.</h1>
+        <p>Une messagerie simple, moderne et proche de vous.</p>
+        <ul class="auth-atouts">
+            <li><i class="fa-solid fa-bolt"></i> Messagerie en temps réel</li>
+            <li><i class="fa-solid fa-users"></i> Salons de discussion</li>
+            <li><i class="fa-solid fa-image"></i> Partage d'images</li>
+            <li><i class="fa-solid fa-file-lines"></i> Résumé automatique des messages</li>
+        </ul>
+    </aside>
+
+    <!-- Carte de connexion / inscription -->
+    <main class="auth-carte">
+        <div class="logo">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Jokko<strong>Chat</strong></span>
+        </div>
+
+        <!-- Onglets -->
+        <div class="onglets" role="tablist">
+            <button type="button" class="onglet actif" id="onglet-connexion" role="tab"
+                    aria-selected="true" aria-controls="form-connexion">Se connecter</button>
+            <button type="button" class="onglet" id="onglet-inscription" role="tab"
+                    aria-selected="false" aria-controls="form-inscription">S'inscrire</button>
+        </div>
+
+        <!-- Formulaire de connexion -->
+        <form id="form-connexion" class="formulaire" action="menu.html" method="get" novalidate>
+            <h2>Bienvenue !</h2>
+            <p class="sous-titre">Connectez-vous ou créez un compte pour commencer.</p>
+
+            <div class="champ">
+                <label for="email-connexion">Email</label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="email-connexion" name="email" placeholder="exemple@uqac.ca"
+                           autocomplete="email" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="mdp-connexion">Mot de passe</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="mdp-connexion" name="mot-de-passe" placeholder="Votre mot de passe"
+                           autocomplete="current-password" required>
+                    <button type="button" class="btn-oeil" aria-label="Afficher le mot de passe">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <label class="case-a-cocher">
+                <input type="checkbox" name="souvenir"> Se souvenir de moi
+            </label>
+
+            <button type="submit" class="btn btn-principal">Se connecter</button>
+
+            <p class="bascule">
+                Pas encore de compte ?
+                <a href="#" data-onglet="inscription">Créez-en un gratuitement !</a>
+            </p>
+        </form>
+
+        <!-- Formulaire d'inscription -->
+        <form id="form-inscription" class="formulaire" action="menu.html" method="get" novalidate hidden>
+            <h2>Créez votre compte</h2>
+            <p class="sous-titre">Rejoignez la communauté étudiante.</p>
+
+            <div class="champ">
+                <label for="nom">Nom complet</label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="nom" name="nom" placeholder="Ex : Abdou Kader Diop"
+                           autocomplete="name" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="email-inscription">Email</label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="email-inscription" name="email" placeholder="exemple@uqac.ca"
+                           autocomplete="email" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="mdp-inscription">Mot de passe</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="mdp-inscription" name="mot-de-passe" placeholder="8 caractères minimum"
+                           autocomplete="new-password" minlength="8" required>
+                    <button type="button" class="btn-oeil" aria-label="Afficher le mot de passe">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="confirmation">Confirmer le mot de passe</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="confirmation" name="confirmation" placeholder="Retapez le mot de passe"
+                           autocomplete="new-password" required>
+                    <button type="button" class="btn-oeil" aria-label="Afficher le mot de passe">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="niveau">Niveau d'étude</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <select id="niveau" name="niveau" required>
+                        <option value="">Sélectionner votre niveau</option>
+                        <option value="baccalaureat">Baccalauréat</option>
+                        <option value="maitrise">Maîtrise</option>
+                        <option value="doctorat">Doctorat</option>
+                        <option value="certificat">Certificat</option>
+                    </select>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="specialite">Spécialité <span class="optionnel">(optionnel)</span></label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-book"></i>
+                    <input type="text" id="specialite" name="specialite" placeholder="Ex : Informatique">
+                </div>
+            </div>
+
+            <div class="champ">
+                <label for="departement">Département</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <input type="text" id="departement" name="departement"
+                           placeholder="Ex : Sciences, Ingénierie, etc." required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <button type="submit" class="btn btn-principal">Créer mon compte</button>
+
+            <p class="bascule">
+                Vous avez déjà un compte ?
+                <a href="#" data-onglet="connexion">Connectez-vous !</a>
+            </p>
+        </form>
+    </main>
+
+    <script src="js/script.js"></script>
 </body>
 </html>
