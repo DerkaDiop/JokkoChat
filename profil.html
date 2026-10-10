@@ -4,39 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon profil - JokkoChat</title>
+    <!-- Script anti-flash du thème -->
+    <script src="js/theme.js"></script>
+    <!-- Feuille de style globale -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <header>
-    <a href="menu.html">☰</a>
-    <h1>👤 Mon profil</h1>
-</header>
+<body class="page-app">
+    <!-- Barre latérale -->
+    <aside class="barre-laterale">
+        <div class="logo">
+            <i class="fa-solid fa-comments"></i>
+            <span>Jokko<strong>Chat</strong></span>
+        </div>
+        <nav class="navigation">
+            <a href="menu.html"><i class="fa-solid fa-house"></i> Accueil</a>
+            <a href="conversation.html"><i class="fa-solid fa-message"></i> Messages</a>
+            <a href="contacts.html"><i class="fa-solid fa-users"></i> Contacts</a>
+            <a href="salons.html"><i class="fa-solid fa-comments"></i> Salons</a>
+            <a href="messages-enregistres.html"><i class="fa-solid fa-bookmark"></i> Enregistrés</a>
+            <a href="profil.html" class="actif"><i class="fa-solid fa-user"></i> Profil</a>
+            <a href="parametres.html"><i class="fa-solid fa-gear"></i> Paramètres</a>
+        </nav>
+        <div class="utilisateur">
+            <div class="avatar initiale-utilisateur">D</div>
+            <div>
+                <div class="utilisateur-nom nom-utilisateur">Utilisateur</div>
+                <div class="utilisateur-statut">En ligne</div>
+            </div>
+        </div>
+        <a href="index.html" class="btn-deconnexion" data-deconnexion>
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </aside>
 
-<hr>
-<section class="profil-informations">
-    <img src="avatar.png" alt="Photo de profil">
+    <!-- Contenu principal -->
+    <main class="contenu">
+        <div class="contenu-entete">
+            <div>
+                <h1>Mon profil</h1>
+                <p>Gérez vos informations personnelles et vos préférences.</p>
+            </div>
+        </div>
 
-    <h2>Kader</h2>
-    <p>🟢 En ligne</p>
-</section>
-<section class="details-profil">
-    <h2>Informations personnelles</h2>
+        <div class="profil-conteneur" style="margin-top: 24px;">
+            <div class="profil-entete">
+                <div class="avatar initiale-utilisateur">D</div>
+                <div>
+                    <h2 class="nom-utilisateur">Kader</h2>
+                    <p class="contact-statut en-ligne">En ligne</p>
+                </div>
+            </div>
 
-    <p><strong>Nom d'utilisateur :</strong> Kader</p>
-    <p><strong>Email :</strong> kader@example.com</p>
-</section>
-<section class="bio-profil">
-    <h2>À propos</h2>
-    <p>Bienvenue sur mon profil JokkoChat !</p>
-</section>
-<p>
-    <a href="modifier-profil.html">✏️ Modifier le profil</a>
-</p>
-<ul class="liens-profil">
-    <li><a href="messages-enregistres.html">🔖 Messages enregistrés</a></li>
-    <li><a href="parametres.html">⚙️ Paramètres</a></li>
-    <li><a href="index.html" data-deconnexion>🚪 Se déconnecter</a></li>
-</ul>
+            <div class="champ">
+                <label>Nom d'utilisateur</label>
+                <p><strong class="nom-utilisateur">Kader</strong></p>
+            </div>
+            
+            <div class="champ">
+                <label>Email</label>
+                <p><strong id="profil-email">kader@example.com</strong></p>
+            </div>
 
-<script src="js/script.js"></script>
+            <div class="champ">
+                <label>À propos</label>
+                <p style="color: var(--texte-doux); font-size: 0.9rem;">Bienvenue sur mon profil JokkoChat !</p>
+            </div>
+
+            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+                <a href="modifier-profil.html" class="btn btn-principal btn-auto">
+                    <i class="fa-solid fa-pen"></i> Modifier le profil
+                </a>
+                <a href="messages-enregistres.html" class="btn btn-secondaire btn-auto">
+                    <i class="fa-solid fa-bookmark"></i> Messages enregistrés
+                </a>
+                <a href="parametres.html" class="btn btn-secondaire btn-auto">
+                    <i class="fa-solid fa-gear"></i> Paramètres
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts de l'application -->
+    <script src="js/resume.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
