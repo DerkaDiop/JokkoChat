@@ -65,6 +65,7 @@ const CONTACTS = {
 const SALONS = {
     general: {
         nom: "Général",
+        description: "Discussions générales entre étudiants.",
         membres: 5,
         icone: "fa-users",
         couleur: "#4f46e5",
@@ -77,6 +78,7 @@ const SALONS = {
     },
     projets: {
         nom: "Projets",
+        description: "Organisation et travaux de groupe.",
         membres: 4,
         icone: "fa-diagram-project",
         couleur: "#10b981",
@@ -87,6 +89,7 @@ const SALONS = {
     },
     etudes: {
         nom: "Études",
+        description: "Aide aux devoirs et révisions.",
         membres: 6,
         icone: "fa-book",
         couleur: "#8b5cf6",
@@ -97,6 +100,7 @@ const SALONS = {
     },
     sports: {
         nom: "Sports",
+        description: "Activités sportives et événements.",
         membres: 3,
         icone: "fa-futbol",
         couleur: "#f97316",
@@ -106,6 +110,7 @@ const SALONS = {
     },
     aide: {
         nom: "Aide & Support",
+        description: "Questions et entraide technique.",
         membres: 8,
         icone: "fa-circle-question",
         couleur: "#ec4899",
@@ -152,16 +157,20 @@ if (parametres.theme !== "sombre") {
     parametres.theme = "clair";
 }
 
+// Appliquer immédiatement le thème au chargement
+if (parametres.theme) {
+    document.documentElement.dataset.theme = parametres.theme;
+}
+
 function enregistrerParametres() {
     return ecrireStockage(CLE_PARAMETRES, parametres);
 }
 
+// Petit message temporaire en bas de l'écran (#toast)
 let minuteurToast = null;
 function afficherToast(texte) {
     const toast = document.getElementById("toast");
-    if (!toast) {
-        return;
-    }
+    if (!toast) return;
     toast.textContent = texte;
     toast.hidden = false;
     clearTimeout(minuteurToast);
@@ -170,17 +179,17 @@ function afficherToast(texte) {
     }, 2500);
 }
 
+// Ajouter les salons créés par l'utilisateur
 Object.assign(SALONS, lireStockage(CLE_SALONS, {}));
+
+// Messages envoyés et réponses reçues
 const messagesAjoutes = lireStockage(CLE_MESSAGES, {});
 
 const CLE_MODIFICATIONS = "jokko-modifications";
 const CLE_REGLAGES = "jokko-reglages";
+
 const modificationsMessages = lireStockage(CLE_MODIFICATIONS, {});
 const reglagesDiscussions = lireStockage(CLE_REGLAGES, {});
-
-function reglageDe(cleStockage) {
-    return Object.assign({ ephemere: parametres.ephemereDefaut }, reglagesDiscussions[cleStockage]);
-}
 
 function estEfface(message) {
     return message.supprime === "moi" || Boolean(message.expire && message.expire <= Date.now());
@@ -223,24 +232,56 @@ preparerDiscussions("contact", CONTACTS);
 preparerDiscussions("salon", SALONS);
 ecrireStockage(CLE_MESSAGES, messagesAjoutes);
 
-/* ---------- Connexion / Inscription ---------- */
+/* ---------- Onglets Connexion / Inscription (index.html) ---------- */
 const formConnexion = document.getElementById("form-connexion");
 const formInscription = document.getElementById("form-inscription");
 
 function afficherOnglet(nom) {
     const estConnexion = nom === "connexion";
+
     if (formConnexion && formInscription) {
         formConnexion.hidden = !estConnexion;
         formInscription.hidden = estConnexion;
+
         document.getElementById("onglet-connexion").classList.toggle("actif", estConnexion);
         document.getElementById("onglet-inscription").classList.toggle("actif", !estConnexion);
+        document.getElementById("onglet-connexion").setAttribute("aria-selected", estConnexion);
+        document.getElementById("onglet-inscription").setAttribute("aria-selected", !estConnexion);
     }
 }
 
 if (formConnexion && formInscription) {
-    document.getElementById("onglet-connexion").addEventListener("click", function () { afficherOnglet("connexion"); });
-    document.getElementById("onglet-inscription").addEventListener("click", function () { afficherOnglet("inscription"); });
+    document.getElementById("onglet-connexion").addEventListener("click", function () {
+        afficherOnglet("connexion");
+    });
+    document.getElementById("onglet-inscription").addEventListener("click", function () {
+        afficherOnglet("inscription");
+    });
+
+    document.querySelectorAll("[data-onglet]").forEach(function (lien) {
+        lien.addEventListener("click", function (evenement) {
+            evenement.preventDefault();
+            afficherOnglet(lien.dataset.onglet);
+        });
+    });
+
+    if (window.location.hash === "#inscription") {
+        afficherOnglet("inscription");
+    }
 }
+
+/* ---------- Afficher / masquer le mot de passe ---------- */
+document.querySelectorAll(".btn-oeil").forEach(function (bouton) {
+    bouton.addEventListener("click", function () {
+        const champ = bouton.parentElement.querySelector("input");
+        const icone = bouton.querySelector("i");
+        const estMasque = champ.type === "password";
+
+        champ.type = estMasque ? "text" : "password";
+        icone.className = estMasque ? "fa-regular fa-eye-slash" : "fa-regular fa-eye";
+        bouton.setAttribute("aria-label", estMasque ? "Masquer le mot de passe" : "Afficher le mot de passe");
+    });
+});
 
 /* ---------- Utilisateur connecté ---------- */
 const CLE_UTILISATEUR = "jokko-utilisateur";
@@ -253,6 +294,99 @@ function lireUtilisateur() {
     }
 }
 
+function enregistrerUtilisateur(formulaire) {
+    const emailInput = formulaire.querySelector("input[type=email]");
+    const email = emailInput ? emailInput.value.trim() : "kader@uqac.ca";
+    let utilisateur;
+
+    if (formulaire.id === "form-inscription") {
+        const nomInput = document.getElementById("nom");
+        utilisateur = {
+            nom: nomInput ? nomInput.value.trim() : "Kader",
+            email: email
+        };
+    } else {
+        const ancien = lireUtilisateur();
+        if (ancien && ancien.email === email) {
+            utilisateur = ancien;
+        } else {
+            const debut = email.split("@")[0];
+            utilisateur = { nom: debut.charAt(0).toUpperCase() + debut.slice(1), email: email };
+        }
+    }
+
+    try {
+        localStorage.setItem(CLE_UTILISATEUR, JSON.stringify(utilisateur));
+    } catch (erreur) {}
+}
+
+/* ---------- Validation des formulaires ---------- */
+function afficherErreur(input, message) {
+    const champ = input.closest(".champ");
+    if (champ) {
+        champ.classList.toggle("invalide", message !== "");
+        const err = champ.querySelector(".erreur");
+        if (err) err.textContent = message;
+    }
+}
+
+function validerChamp(input) {
+    let message = "";
+
+    if (input.validity.valueMissing) {
+        message = "Ce champ est obligatoire.";
+    } else if (input.validity.typeMismatch && input.type === "email") {
+        message = "Adresse email invalide.";
+    } else if (input.validity.tooShort) {
+        message = "Au moins " + input.minLength + " caractères.";
+    } else if (input.id === "confirmation") {
+        const motDePasse = document.getElementById("mdp-inscription");
+        if (motDePasse && input.value !== motDePasse.value) {
+            message = "Les mots de passe ne correspondent pas.";
+        }
+    }
+
+    afficherErreur(input, message);
+    return message === "";
+}
+
+document.querySelectorAll(".page-auth .formulaire").forEach(function (formulaire) {
+    const champs = Array.from(formulaire.querySelectorAll("input, select")).filter(function (input) {
+        return input.closest(".champ") && input.closest(".champ").querySelector(".erreur");
+    });
+
+    formulaire.addEventListener("submit", function (evenement) {
+        let toutEstValide = true;
+        champs.forEach(function (input) {
+            if (!validerChamp(input)) {
+                toutEstValide = false;
+            }
+        });
+
+        evenement.preventDefault();
+
+        if (!toutEstValide) {
+            const premierInvalide = formulaire.querySelector(".champ.invalide input, .champ.invalide select");
+            if (premierInvalide) premierInvalide.focus();
+            return;
+        }
+
+        enregistrerUtilisateur(formulaire);
+        window.location.href = formulaire.getAttribute("action");
+    });
+
+    champs.forEach(function (input) {
+        input.addEventListener("input", function () {
+            if (input.closest(".champ").classList.contains("invalide")) {
+                validerChamp(input);
+            }
+        });
+    });
+});
+
+/* =========================================================
+   Menu (menu.html)
+   ========================================================= */
 const utilisateurConnecte = lireUtilisateur();
 
 if (document.body.classList.contains("page-app") && !utilisateurConnecte) {
@@ -269,6 +403,7 @@ document.querySelectorAll("[data-deconnexion]").forEach(function (lien) {
 
 if (utilisateurConnecte && utilisateurConnecte.nom) {
     const prenom = utilisateurConnecte.nom.split(" ")[0];
+
     document.querySelectorAll(".nom-utilisateur").forEach(function (element) {
         element.textContent = prenom;
     });
@@ -277,46 +412,127 @@ if (utilisateurConnecte && utilisateurConnecte.nom) {
     });
 }
 
+/* ---------- Cloche de notifications ---------- */
+const btnCloche = document.getElementById("btn-cloche");
+const panneauNotifications = document.getElementById("panneau-notifications");
+
+function ouvrirNotifications(ouvrir) {
+    if (panneauNotifications && btnCloche) {
+        panneauNotifications.hidden = !ouvrir;
+        btnCloche.setAttribute("aria-expanded", ouvrir);
+    }
+}
+
+if (btnCloche && panneauNotifications) {
+    btnCloche.addEventListener("click", function () {
+        ouvrirNotifications(panneauNotifications.hidden);
+    });
+
+    const btnToutLu = document.getElementById("btn-tout-lu");
+    if (btnToutLu) {
+        btnToutLu.addEventListener("click", function () {
+            panneauNotifications.querySelectorAll(".non-lue").forEach(function (notification) {
+                notification.classList.remove("non-lue");
+            });
+            const badge = document.getElementById("badge-notifications");
+            if (badge) badge.remove();
+        });
+    }
+
+    document.addEventListener("click", function (evenement) {
+        if (!evenement.target.closest(".notifications")) {
+            ouvrirNotifications(false);
+        }
+    });
+}
+
 /* ---------- Recherche globale ---------- */
 const donneesRecherche = [];
+
 Object.keys(CONTACTS).forEach(function (cle) {
     const contact = CONTACTS[cle];
     const lien = "conversation.html?contact=" + cle;
+
     donneesRecherche.push({ type: "Contact", nom: contact.nom, detail: STATUTS[contact.statut], lien: lien, icone: "fa-user" });
+    contact.messages.filter(estLisible).forEach(function (message) {
+        const titre = message.auteur === "Moi" ? "Moi → " + contact.nom : contact.nom;
+        donneesRecherche.push({ type: "Message", nom: titre, detail: message.texte || (message.audio ? "🎤 Message vocal" : "📷 Photo"), lien: lien, icone: "fa-comment" });
+    });
 });
+
 Object.keys(SALONS).forEach(function (cle) {
     const salon = SALONS[cle];
     const lien = "conversation-salon.html?salon=" + cle;
+
     donneesRecherche.push({ type: "Salon", nom: "# " + salon.nom, detail: salon.membres + " membres", lien: lien, icone: "fa-hashtag" });
+    salon.messages.filter(estLisible).forEach(function (message) {
+        donneesRecherche.push({ type: "Message", nom: message.auteur + " (# " + salon.nom + ")", detail: message.texte || (message.audio ? "🎤 Message vocal" : "📷 Photo"), lien: lien, icone: "fa-comment" });
+    });
 });
 
 function simplifier(texte) {
-    return texte.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return texte ? texte.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
 }
 
 const champRecherche = document.getElementById("recherche-globale");
 const listeResultats = document.getElementById("resultats-recherche");
 
-if (champRecherche && listeResultats) {
-    champRecherche.addEventListener("input", function() {
-        const saisie = simplifier(champRecherche.value.trim());
-        listeResultats.innerHTML = "";
-        if (saisie === "") { listeResultats.hidden = true; return; }
-        const resultats = donneesRecherche.filter(el => simplifier(el.nom).includes(saisie));
-        resultats.slice(0, 8).forEach(el => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = el.lien;
-            a.innerHTML = `<i class="fa-solid ${el.icone}"></i> <span class="resultat-texte"><strong>${el.nom}</strong><small>${el.detail}</small></span>`;
-            li.appendChild(a);
-            listeResultats.appendChild(li);
-        });
-        listeResultats.hidden = resultats.length === 0;
+function afficherResultats() {
+    if (!champRecherche || !listeResultats) return;
+    const saisie = simplifier(champRecherche.value.trim());
+    listeResultats.innerHTML = "";
+
+    if (saisie === "") {
+        listeResultats.hidden = true;
+        return;
+    }
+
+    const resultats = donneesRecherche.filter(function (element) {
+        return simplifier(element.nom).includes(saisie) || simplifier(element.detail).includes(saisie);
     });
+
+    if (resultats.length === 0) {
+        const vide = document.createElement("li");
+        vide.className = "aucun-resultat";
+        vide.textContent = "Aucun résultat pour « " + champRecherche.value.trim() + " »";
+        listeResultats.appendChild(vide);
+    }
+
+    resultats.slice(0, 8).forEach(function (element) {
+        const ligne = document.createElement("li");
+        const lien = document.createElement("a");
+        lien.href = element.lien;
+
+        const icone = document.createElement("i");
+        icone.className = "fa-solid " + element.icone;
+
+        const texte = document.createElement("span");
+        texte.className = "resultat-texte";
+        const nom = document.createElement("strong");
+        nom.textContent = element.nom;
+        const detail = document.createElement("small");
+        detail.textContent = element.detail;
+        texte.append(nom, detail);
+
+        const type = document.createElement("span");
+        type.className = "resultat-type";
+        type.textContent = element.type;
+
+        lien.append(icone, texte, type);
+        ligne.appendChild(lien);
+        listeResultats.appendChild(ligne);
+    });
+
+    listeResultats.hidden = false;
+}
+
+if (champRecherche && listeResultats) {
+    champRecherche.addEventListener("input", afficherResultats);
+    champRecherche.addEventListener("focus", afficherResultats);
 }
 
 /* =========================================================
-   Messagerie & Enregistrement des messages
+   Messagerie (conversation.html et conversation-salon.html)
    ========================================================= */
 const typeMessagerie = document.body.dataset.type;
 
@@ -325,60 +541,130 @@ function heureActuelle() {
     return String(maintenant.getHours()).padStart(2, "0") + ":" + String(maintenant.getMinutes()).padStart(2, "0");
 }
 
-function remplirAvatar(avatar, type, discussion) {
-    avatar.innerHTML = "";
-    if (type === "contact") {
-        avatar.className = "avatar";
-        avatar.textContent = discussion.nom.charAt(0).toUpperCase();
-        const pastille = document.createElement("span");
-        pastille.className = discussion.statut === "hors-ligne" ? "pastille" : "pastille en-ligne";
-        avatar.appendChild(pastille);
-    } else {
-        avatar.className = "avatar avatar-salon";
-        avatar.style.background = discussion.couleur;
-        const icone = document.createElement("i");
-        icone.className = "fa-solid " + discussion.icone;
-        avatar.appendChild(icone);
-    }
-}
-
 if (typeMessagerie) {
     const donnees = typeMessagerie === "contact" ? CONTACTS : SALONS;
+    const pageMessagerie = typeMessagerie === "contact" ? "conversation.html" : "conversation-salon.html";
     const cleOuverte = new URLSearchParams(window.location.search).get(typeMessagerie);
     const discussionOuverte = donnees[cleOuverte];
     const cleStockageOuverte = typeMessagerie + ":" + cleOuverte;
+
+    const listeDiscussions = document.getElementById("liste-discussions");
+    const filtreDiscussions = document.getElementById("filtre-discussions");
     const zoneMessages = document.getElementById("messages");
+
+    function quiEcrit(discussion) {
+        if (typeMessagerie === "contact") {
+            return discussion.statut === "ecrit" ? discussion.nom : null;
+        }
+        return discussion.ecritPar || null;
+    }
+
+    function apercu(discussion) {
+        const auteurEnTrain = quiEcrit(discussion);
+        if (auteurEnTrain) {
+            return typeMessagerie === "salon" ? auteurEnTrain + " écrit..." : "En train d'écrire...";
+        }
+        const dernier = discussion.messages[discussion.messages.length - 1];
+        if (!dernier) return "Aucun message pour l'instant";
+        if (dernier.systeme) return dernier.texte;
+
+        let contenu;
+        if (dernier.supprime === "tous") contenu = "🚫 Message supprimé";
+        else if (dernier.masque) contenu = "🙈 Message masqué";
+        else if (dernier.vueUnique) contenu = dernier.ouvert ? "① Ouvert" : "① Vue unique";
+        else contenu = dernier.texte || (dernier.audio ? "🎤 Message vocal" : "📷 Photo");
+
+        if (dernier.auteur === "Moi") return "Vous : " + contenu;
+        return typeMessagerie === "salon" ? dernier.auteur + " : " + contenu : contenu;
+    }
+
+    function afficherListe() {
+        if (!listeDiscussions) return;
+        const saisie = filtreDiscussions ? simplifier(filtreDiscussions.value.trim()) : "";
+        listeDiscussions.innerHTML = "";
+
+        Object.keys(donnees).forEach(function (cle) {
+            const discussion = donnees[cle];
+            if (saisie && !simplifier(discussion.nom).includes(saisie)) return;
+
+            const lien = document.createElement("a");
+            lien.href = pageMessagerie + "?" + typeMessagerie + "=" + cle;
+            if (cle === cleOuverte) {
+                lien.className = "actif";
+                lien.setAttribute("aria-current", "page");
+            }
+
+            const texte = document.createElement("div");
+            texte.className = "recente-texte";
+            const nom = document.createElement("p");
+            nom.className = "recente-nom";
+            nom.textContent = typeMessagerie === "salon" ? "# " + discussion.nom : discussion.nom;
+            const resume = document.createElement("p");
+            resume.className = "recente-apercu";
+            if (quiEcrit(discussion)) {
+                resume.classList.add("ecrit");
+            } else {
+                resume.classList.remove("ecrit");
+            }
+            resume.textContent = apercu(discussion);
+            texte.append(nom, resume);
+
+            const infos = document.createElement("div");
+            infos.className = "recente-infos";
+            const dernier = discussion.messages[discussion.messages.length - 1];
+            const heure = document.createElement("small");
+            heure.textContent = dernier ? dernier.heure : "";
+            infos.appendChild(heure);
+
+            const avatarDiv = document.createElement("div");
+            remplirAvatar(avatarDiv, typeMessagerie, discussion);
+
+            lien.append(avatarDiv, texte, infos);
+            const ligne = document.createElement("li");
+            ligne.appendChild(lien);
+            listeDiscussions.appendChild(ligne);
+        });
+    }
+
+    if (filtreDiscussions) {
+        filtreDiscussions.addEventListener("input", afficherListe);
+    }
+    afficherListe();
 
     if (discussionOuverte && zoneMessages) {
         document.body.classList.add("vue-chat");
-        document.getElementById("chat-vide").hidden = true;
-        document.getElementById("chat-actif").hidden = false;
+        const chatVide = document.getElementById("chat-vide");
+        const chatActif = document.getElementById("chat-actif");
+        if (chatVide) chatVide.hidden = true;
+        if (chatActif) chatActif.hidden = false;
 
         const titre = typeMessagerie === "salon" ? "# " + discussionOuverte.nom : discussionOuverte.nom;
-        document.getElementById("chat-nom").textContent = titre;
-        remplirAvatar(document.getElementById("chat-avatar"), typeMessagerie, discussionOuverte);
+        document.title = titre + " - JokkoChat";
+        const chatNom = document.getElementById("chat-nom");
+        if (chatNom) chatNom.textContent = titre;
 
-        const CLE_ENREGISTRES = "jokko-messages-enregistres";
+        const chatAvatar = document.getElementById("chat-avatar");
+        if (chatAvatar) remplirAvatar(chatAvatar, typeMessagerie, discussionOuverte);
 
         function afficherMessages() {
             zoneMessages.innerHTML = "";
+            const CLE_ENREGISTRES = "jokko-messages-enregistres";
             const messagesEnregistres = lireStockage(CLE_ENREGISTRES, []);
 
             discussionOuverte.messages.forEach(function (message) {
                 const ligne = document.createElement("div");
                 ligne.className = "bulle-ligne";
-                if (message.auteur === "Moi") { ligne.classList.add("envoye"); }
+                if (message.auteur === "Moi") ligne.classList.add("envoye");
 
                 const bulle = document.createElement("div");
                 bulle.className = "bulle";
 
-                // Bouton d'enregistrement (signet 🔖)
                 const estEnregistre = messagesEnregistres.some(m => m.id === message.id);
                 const btnEnregistrer = document.createElement("button");
                 btnEnregistrer.className = "btn-options-message";
                 btnEnregistrer.innerHTML = estEnregistre ? '<i class="fa-solid fa-bookmark" style="color: var(--primaire);"></i>' : '<i class="fa-regular fa-bookmark"></i>';
                 btnEnregistrer.title = estEnregistre ? "Retirer des messages enregistrés" : "Enregistrer ce message";
-                
+
                 btnEnregistrer.addEventListener("click", function () {
                     let enregistres = lireStockage(CLE_ENREGISTRES, []);
                     const index = enregistres.findIndex(m => m.id === message.id);
@@ -388,7 +674,7 @@ if (typeMessagerie) {
                         afficherToast("Message retiré des enregistrés");
                     } else {
                         enregistres.push({
-                            id: message.id,
+                            id: message.id || (cleStockageOuverte + ":" + Math.random()),
                             auteur: message.auteur,
                             texte: message.texte || "[Média]",
                             heure: message.heure,
@@ -423,7 +709,7 @@ if (typeMessagerie) {
         const formMessage = document.getElementById("form-message");
         const champMessage = document.getElementById("champ-message");
 
-        if (formMessage) {
+        if (formMessage && champMessage) {
             formMessage.addEventListener("submit", function (e) {
                 e.preventDefault();
                 const texte = champMessage.value.trim();
@@ -437,7 +723,7 @@ if (typeMessagerie) {
                 };
 
                 discussionOuverte.messages.push(nouveauMessage);
-                if (!messagesAjoutes[cleStockageOuverte]) { messagesAjoutes[cleStockageOuverte] = []; }
+                if (!messagesAjoutes[cleStockageOuverte]) messagesAjoutes[cleStockageOuverte] = [];
                 messagesAjoutes[cleStockageOuverte].push(nouveauMessage);
                 ecrireStockage(CLE_MESSAGES, messagesAjoutes);
 
@@ -448,6 +734,23 @@ if (typeMessagerie) {
     }
 }
 
+function remplirAvatar(avatar, type, discussion) {
+    avatar.innerHTML = "";
+    if (type === "contact") {
+        avatar.className = "avatar";
+        avatar.textContent = discussion.nom.charAt(0).toUpperCase();
+        const pastille = document.createElement("span");
+        pastille.className = discussion.statut === "hors-ligne" ? "pastille" : "pastille en-ligne";
+        avatar.appendChild(pastille);
+    } else {
+        avatar.className = "avatar avatar-salon";
+        avatar.style.background = discussion.couleur;
+        const icone = document.createElement("i");
+        icone.className = "fa-solid " + discussion.icone;
+        avatar.appendChild(icone);
+    }
+}
+
 /* =========================================================
    Gestion de la page Contacts (contacts.html)
    ========================================================= */
@@ -455,13 +758,15 @@ const listeContactsPage = document.getElementById("liste-contacts");
 const champRechercheContacts = document.getElementById("recherche-contacts");
 
 if (listeContactsPage) {
-    function afficherContacts(filtre = "") {
+    function afficherContactsPage(filtre = "") {
         listeContactsPage.innerHTML = "";
         const saisie = simplifier(filtre.trim());
 
         Object.keys(CONTACTS).forEach(function (cle) {
             const contact = CONTACTS[cle];
-            if (!simplifier(contact.nom).includes(saisie)) return;
+            if (saisie && !simplifier(contact.nom).includes(saisie)) {
+                return;
+            }
 
             const li = document.createElement("li");
             const lien = document.createElement("a");
@@ -473,83 +778,95 @@ if (listeContactsPage) {
 
             const infosDiv = document.createElement("div");
             infosDiv.className = "contact-infos";
-            infosDiv.innerHTML = `<p class="contact-nom">${contact.nom}</p><p class="contact-statut ${contact.statut}">${contact.statut === 'en-ligne' ? 'En ligne' : 'Hors-ligne'}</p>`;
+            infosDiv.innerHTML = `
+                <h3 class="contact-nom">${contact.nom}</h3>
+                <small class="contact-statut ${contact.statut === 'ecrit' ? 'ecrit' : ''}">${STATUTS[contact.statut] || 'En ligne'}</small>
+            `;
 
-            lien.append(avatarDiv, infosDiv);
+            const btnMessage = document.createElement("button");
+            btnMessage.className = "btn btn-principal btn-auto";
+            btnMessage.innerHTML = '<i class="fa-solid fa-message"></i> Discuter';
+
+            lien.append(avatarDiv, infosDiv, btnMessage);
             li.appendChild(lien);
             listeContactsPage.appendChild(li);
         });
     }
-    afficherContacts();
+
+    afficherContactsPage();
+
     if (champRechercheContacts) {
-        champRechercheContacts.addEventListener("input", function () { afficherContacts(champRechercheContacts.value); });
+        champRechercheContacts.addEventListener("input", function () {
+            afficherContactsPage(champRechercheContacts.value);
+        });
     }
 }
 
 /* =========================================================
-   Gestion de la page Profil (profil.html)
+   Gestion de la page Salons (salons.html)
    ========================================================= */
-const profilNom = document.getElementById("profil-nom");
-const profilEmail = document.getElementById("profil-email");
-if (profilNom && utilisateurConnecte) {
-    profilNom.textContent = utilisateurConnecte.nom;
-    if (profilEmail) { profilEmail.textContent = utilisateurConnecte.email || "Non renseigné"; }
-}
+const listeSalonsPage = document.getElementById("liste-salons");
+const champRechercheSalons = document.getElementById("recherche-salons");
 
-/* =========================================================
-   Gestion de la page Messages Enregistrés (messages-enregistres.html)
-   ========================================================= */
-const listeEnregistresPage = document.getElementById("liste-enregistres");
+if (listeSalonsPage) {
+    function afficherSalonsPage(filtre = "") {
+        listeSalonsPage.innerHTML = "";
+        const saisie = simplifier(filtre.trim());
 
-if (listeEnregistresPage) {
-    function afficherMessagesEnregistres() {
-        const enregistres = lireStockage("jokko-messages-enregistres", []);
-        listeEnregistresPage.innerHTML = "";
+        Object.keys(SALONS).forEach(function (cle) {
+            const salon = SALONS[cle];
+            if (saisie && !simplifier(salon.nom).includes(saisie) && !simplifier(salon.description || "").includes(saisie)) {
+                return;
+            }
 
-        if (enregistres.length === 0) {
-            listeEnregistresPage.innerHTML = `
-                <li style="padding: 24px; text-align: center; color: var(--texte-doux); list-style: none;">
-                    <i class="fa-regular fa-bookmark" style="font-size: 2rem; margin-bottom: 8px; display: block; color: var(--primaire);"></i>
-                    Aucun message enregistré pour l'instant. Cliquez sur l'icône de signet (🔖) sur un message dans vos conversations pour l'enregistrer ici !
-                </li>
-            `;
-            return;
-        }
-
-        enregistres.forEach(function (message) {
             const li = document.createElement("li");
-            li.style.display = "flex";
-            li.style.alignItems = "center";
-            li.style.justifyContent = "space-between";
-            li.style.padding = "14px 16px";
-            li.style.borderBottom = "1px solid var(--bordure)";
+            const lien = document.createElement("a");
+            lien.href = "conversation-salon.html?salon=" + cle;
+            lien.className = "carte-salon";
 
-            const infoDiv = document.createElement("div");
-            infoDiv.innerHTML = `<strong style="font-size: 0.85rem; color: var(--primaire); display: block;">${message.auteur} ${message.discussionNom ? '(' + message.discussionNom + ')' : ''}</strong><p style="font-size: 0.95rem;">${message.texte}</p>`;
+            const iconeDiv = document.createElement("div");
+            iconeDiv.className = "salon-icone";
+            iconeDiv.style.background = salon.couleur || "#4f46e5";
+            iconeDiv.innerHTML = `<i class="fa-solid ${salon.icone || 'fa-comments'}"></i>`;
 
-            const actionsDiv = document.createElement("div");
-            actionsDiv.style.display = "flex";
-            actionsDiv.style.alignItems = "center";
-            actionsDiv.style.gap = "12px";
-            actionsDiv.innerHTML = `<small style="color: var(--texte-doux);">${message.heure}</small>`;
+            const infosDiv = document.createElement("div");
+            infosDiv.className = "salon-infos";
+            infosDiv.innerHTML = `
+                <h3 class="salon-nom"># ${salon.nom}</h3>
+                <p class="salon-description">${salon.description || 'Salon de discussion'}</p>
+                <small class="salon-membres"><i class="fa-solid fa-user-group"></i> ${salon.membres || 1} membre(s)</small>
+            `;
 
-            const btnSupprimer = document.createElement("button");
-            btnSupprimer.className = "btn-icone";
-            btnSupprimer.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-            btnSupprimer.title = "Retirer des enregistrés";
-            btnSupprimer.addEventListener("click", function () {
-                let actualises = lireStockage("jokko-messages-enregistres", []);
-                actualises = actualises.filter(m => m.id !== message.id);
-                ecrireStockage("jokko-messages-enregistres", actualises);
-                afficherMessagesEnregistres();
-                afficherToast("Message retiré des enregistrés");
-            });
-
-            actionsDiv.appendChild(btnSupprimer);
-            li.append(infoDiv, actionsDiv);
-            listeEnregistresPage.appendChild(li);
+            lien.append(iconeDiv, infosDiv);
+            li.appendChild(lien);
+            listeSalonsPage.appendChild(li);
         });
     }
 
-    afficherMessagesEnregistres();
+    afficherSalonsPage();
+
+    if (champRechercheSalons) {
+        champRechercheSalons.addEventListener("input", function () {
+            afficherSalonsPage(champRechercheSalons.value);
+        });
+    }
 }
+
+/* =========================================================
+   Activation des boutons de thème sur parametres.html
+   ========================================================= */
+document.querySelectorAll(".page-app button, [data-theme-btn], .section-parametres button").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+        const texte = btn.textContent.trim().toLowerCase();
+        if (texte.includes("sombre")) {
+            parametres.theme = "sombre";
+        } else if (texte.includes("clair")) {
+            parametres.theme = "clair";
+        } else {
+            return;
+        }
+        enregistrerParametres();
+        document.documentElement.dataset.theme = parametres.theme;
+        afficherToast("Thème mis à jour ! 🌙");
+    });
+});

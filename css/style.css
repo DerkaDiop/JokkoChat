@@ -3,75 +3,78 @@
    ========================================================= */
 
 /* ---------- Variables (couleurs, arrondis, ombres) ---------- */
+/* ---------- Variables (Gris élégants & Mauves) ---------- */
 :root {
-    --primaire: #4f46e5;
-    --primaire-fonce: #4338ca;
-    --primaire-clair: #eef0ff;
-    --violet: #7c5cf6;
+    --primaire: #6366f1;
+    --primaire-fonce: #4f46e5;
+    --primaire-clair: #f3f4f6;
+    --violet: #8b5cf6;
 
-    --fond: #f4f5fb;
+    --fond: #f9fafb;
     --carte: #ffffff;
-    --texte: #1e1f3b;
-    --texte-doux: #6b7091;
-    --bordure: #e3e5f0;
+    --texte: #1f2937;
+    --texte-doux: #6b7280;
+    --bordure: #e5e7eb;
 
-    --sombre: #12142b;
-    --sombre-survol: #1f2245;
+    /* Remplacement du noir lourd par des gris/mauves profonds mais doux */
+    --sombre: #2d2b42;
+    --sombre-survol: #3d3a59;
 
     --succes: #22c55e;
-    --danger: #e5484d;
+    --danger: #ef4444;
 
-    /* Couleurs secondaires (changent avec le thème sombre) */
     --champ: #ffffff;
-    --bulle-envoyee: #e2ddff;
-    --danger-clair: #fdecec;
-    --danger-clair-survol: #fad4d5;
-    --info-fond: #fff7e0;
-    --info-texte: #8a6100;
-    --attention: #b07800;
-    --non-lue: #f7f7ff;
+    --bulle-envoyee: #ede9fe;
+    --danger-clair: #fee2e2;
+    --danger-clair-survol: #fecaca;
+    --info-fond: #fef3c7;
+    --info-texte: #b45309;
+    --attention: #d97706;
+    --non-lue: #f5f3ff;
 
     --rayon: 14px;
     --rayon-petit: 10px;
-    --ombre: 0 8px 24px rgba(30, 31, 59, 0.08);
+    --ombre: 0 8px 24px rgba(79, 70, 229, 0.06);
 
     color-scheme: light;
 }
 
-/* ---------- Thème sombre ----------
-   Le thème est choisi dans parametres.html et appliqué par js/theme.js
-   (attribut data-theme sur la balise <html>). */
+/* ---------- Thème sombre (Gris ardoise & Mauve lumineux) ---------- */
+[data-theme="sombre"],
 :root[data-theme="sombre"] {
-    --primaire: #6d66f2;
-    --primaire-fonce: #5b53e8;
-    --primaire-clair: #262852;
-    --violet: #8b7bff;
+    --primaire: #818cf8;
+    --primaire-fonce: #6366f1;
+    --primaire-clair: #2e2a47;
+    --violet: #a78bfa;
 
-    --fond: #0f1123;
-    --carte: #1a1d36;
-    --texte: #e8e9f5;
-    --texte-doux: #9a9ec0;
-    --bordure: #2c3052;
+    --fond: #181622;
+    --carte: #221f33;
+    --texte: #f3f4f6;
+    --texte-doux: #9ca3af;
+    --bordure: #36324d;
 
-    --sombre: #0a0b1a;
-    --sombre-survol: #1c1f3d;
+    --sombre: #14121c;
+    --sombre-survol: #282438;
 
-    --champ: #14162c;
-    --bulle-envoyee: #3a3480;
-    --danger-clair: #3b1e26;
-    --danger-clair-survol: #4a2430;
-    --info-fond: #3a3015;
-    --info-texte: #f0c86a;
-    --attention: #f0b84a;
-    --non-lue: #20234a;
+    --succes: #34d399;
+    --champ: #1d1a29;
+    --bulle-envoyee: #3b335c;
+    --danger-clair: #4c1d25;
+    --danger-clair-survol: #65202d;
+    --info-fond: #453616;
+    --info-texte: #fcd34d;
+    --attention: #fbbf24;
+    --non-lue: #2c2447;
 
-    --ombre: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --ombre: 0 8px 24px rgba(0, 0, 0, 0.3);
 
     color-scheme: dark;
 }
 
 /* ---------- Base ---------- */
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -816,8 +819,8 @@ textarea {
     font-size: 1.4rem;
 }
 
-.icone-bleu   { background: #3b82f6; }
-.icone-vert   { background: #22c55e; }
+.icone-bleu    { background: #3b82f6; }
+.icone-vert    { background: #22c55e; }
 .icone-violet { background: #8b5cf6; }
 .icone-orange { background: #f97316; }
 
@@ -1353,7 +1356,7 @@ button.vue-unique:hover span:last-child {
 
 @keyframes rebond {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30%           { transform: translateY(-4px); opacity: 1; }
+    30%          { transform: translateY(-4px); opacity: 1; }
 }
 
 /* ---------- Zone de saisie ---------- */
@@ -1442,7 +1445,6 @@ button.vue-unique:hover span:last-child {
 }
 
 /* ---------- Message vocal ---------- */
-/* Pendant l'enregistrement, la barre remplace le champ de texte */
 .zone-saisie.en-enregistrement #btn-image,
 .zone-saisie.en-enregistrement #champ-message,
 .zone-saisie.en-enregistrement #btn-emoji,
@@ -1515,6 +1517,7 @@ button.vue-unique:hover span:last-child {
     color: var(--danger);
     font-size: 0.8rem;
 }
+
 .zone-saisie {
     display: flex;
     align-items: center;
@@ -1728,500 +1731,134 @@ button.vue-unique:hover span:last-child {
 .resume-entete h2 {
     font-size: 1.2rem;
 }
-
-.resume-entete h2 i {
-    color: var(--primaire);
-}
-
-.btn-fermer {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 50%;
-    background: var(--fond);
-    cursor: pointer;
-}
-
-.resume-stats {
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    border-radius: var(--rayon-petit);
-    background: var(--primaire-clair);
-    color: var(--primaire);
-    font-size: 0.85rem;
-}
-
-#contenu-resume h3 {
-    margin: 16px 0 6px;
-    font-size: 0.95rem;
-}
-
-#contenu-resume ul {
-    display: grid;
-    gap: 6px;
-    padding-left: 20px;
-    font-size: 0.9rem;
-}
-
-.resume-note {
-    margin-top: 18px;
-    color: var(--texte-doux);
-    font-size: 0.75rem;
-}
-
-/* ---------- Visionneuse (image en grand) ---------- */
-.visionneuse {
-    margin: auto;
-    padding: 0;
-    border: none;
-    background: transparent;
-    cursor: zoom-out;
-}
-
-.visionneuse::backdrop {
-    background: rgba(18, 20, 43, 0.85);
-}
-
-.visionneuse img {
-    display: block;
-    max-width: 92vw;
-    max-height: 88vh;
-    border-radius: var(--rayon-petit);
-}
-
 /* =========================================================
-   Paramètres (parametres.html)
+   Correction des couleurs de statut (En ligne, En train d'écrire...)
    ========================================================= */
-.page-parametres {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr); /* empêche le contenu de déborder sur petit écran */
-    gap: 20px;
-    align-content: start;
-    min-width: 0;
+
+/* Pastille verte pour les contacts en ligne */
+.pastille.en-ligne {
+    background: var(--succes) !important;
 }
 
-.page-parametres .contenu-entete {
-    justify-content: flex-start;
+/* Texte "En train d'écrire..." en vert */
+.recente-apercu.ecrit,
+#chat-statut.ecrit {
+    color: var(--succes) !important;
+    font-style: italic;
+}
+
+/* Si vous avez d'autres indicateurs textuels de statut */
+.utilisateur-statut[data-statut="en-ligne"],
+.statut-en-ligne {
+    color: var(--succes) !important;
+
+}
+/* =========================================================
+   Statuts "En ligne" et "Hors ligne" en vert
+   ========================================================= */
+
+/* Pastilles de statut (les deux utilisent la couleur verte) */
+.pastille.en-ligne,
+.pastille {
+    background: var(--succes) !important;
+}
+
+/* Textes de statut (En ligne, Hors ligne, En train d'écrire) en vert */
+.contact-statut,
+.utilisateur-statut,
+.recente-apercu.ecrit,
+#chat-statut.ecrit {
+    color: var(--succes) !important;
+    font-style: normal; /* Restera droit ou italique selon vos préférences */
+}
+/* =========================================================
+   Mise en page de la page Paramètres (parametres.html)
+   ========================================================= */
+
+.section-parametres,
+.contenu form,
+.contenu > div {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+/* Style des cartes de paramètres (similaire aux cartes de salons) */
+.contenu label:has(input[type="checkbox"]),
+.contenu label:has(input[type="radio"]),
+.contenu .carte-parametre {
+    display: flex;
     align-items: center;
-}
-
-.reglages {
-    display: grid;
-    gap: 20px;
-}
-
-.carte-reglages {
-    padding: 8px 20px 12px;
+    gap: 16px;
+    padding: 16px 20px;
     background: var(--carte);
     border: 1px solid var(--bordure);
     border-radius: var(--rayon);
-}
-
-.carte-reglages h2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 0 4px;
-    font-size: 1.05rem;
-}
-
-.carte-reglages h2 i {
-    color: var(--primaire);
-}
-
-/* Une ligne de réglage : texte à gauche, contrôle à droite */
-.reglage {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    min-width: 0;
-    padding: 14px 0;
-    border: none;
-    border-top: 1px solid var(--bordure);
     color: var(--texte);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.carte-reglages h2 + .reglage {
-    border-top: none;
+.contenu label:has(input[type="checkbox"]):hover,
+.contenu label:has(input[type="radio"]):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ombre);
 }
 
-label.reglage {
+.contenu input[type="checkbox"],
+.contenu input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primaire);
     cursor: pointer;
 }
 
-.reglage-colonne {
+/* Titres de sections avec icônes (comme dans les salons) */
+.contenu h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+    margin-bottom: 14px;
+    color: var(--texte);
+}
+
+/* Textes descriptifs à l'intérieur des options */
+.contenu label div, 
+.contenu label span {
+    flex: 1;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-}
-
-.reglage-texte {
-    display: grid;
     gap: 2px;
-    min-width: 0;
-    float: none;
 }
 
-.reglage-texte small,
-.reglage-note {
+.contenu small, 
+.contenu p.description {
     color: var(--texte-doux);
     font-size: 0.82rem;
 }
-
-.reglage-verrou {
-    color: var(--texte-doux);
-}
-
-.reglage-lien:hover strong {
-    color: var(--primaire);
-}
-
-.reglage-lien > i {
-    color: var(--texte-doux);
-}
-
-/* Interrupteur (case à cocher en forme de bouton glissant) */
-.interrupteur {
-    position: relative;
-    flex-shrink: 0;
-    width: 46px;
-    height: 26px;
-    border-radius: 999px;
-    background: var(--bordure);
-    appearance: none;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.interrupteur::before {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-    transition: transform 0.2s;
-}
-
-.interrupteur:checked {
-    background: var(--primaire);
-}
-
-.interrupteur:checked::before {
-    transform: translateX(20px);
-}
-
-.interrupteur:focus-visible,
-.choix-segmente button:focus-visible {
-    outline: 3px solid var(--primaire-clair);
-    outline-offset: 2px;
-}
-
-.liste-choix {
-    flex-shrink: 0;
-    padding: 8px 12px;
-    background: var(--champ);
-    border: 1px solid var(--bordure);
-    border-radius: var(--rayon-petit);
-}
-
-/* Choix du thème : deux boutons côte à côte */
-.choix-segmente {
+/* =========================================================
+   Mise en page de la liste des contacts (contacts.html)
+   ========================================================= */
+.liste-contacts {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 4px;
-    margin-top: 10px;
-    padding: 4px;
-    background: var(--fond);
-    border-radius: var(--rayon-petit);
-}
-
-.choix-segmente button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 8px;
-    border: none;
-    border-radius: 8px;
-    background: none;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.choix-segmente button:hover {
-    background: var(--primaire-clair);
-}
-
-.choix-segmente button[aria-pressed="true"] {
-    background: var(--primaire);
-    color: #ffffff;
-}
-
-/* Jauge du stockage */
-.jauge {
-    height: 10px;
-    margin: 10px 0 8px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: var(--fond);
-}
-
-.jauge span {
-    display: block;
-    height: 100%;
-    min-width: 4px;
-    border-radius: 999px;
-    background: var(--primaire);
-    transition: width 0.3s;
-}
-
-.jauge.presque-pleine span {
-    background: var(--danger);
-}
-
-.reglage-actions {
-    display: flex;
-    flex-wrap: wrap;
     gap: 10px;
-    padding: 4px 0 8px;
-}
-
-/* Aide : questions qui s'ouvrent */
-.question {
-    padding: 12px 0;
-    border-top: 1px solid var(--bordure);
-}
-
-.carte-reglages h2 + .question {
-    border-top: none;
-}
-
-.question summary {
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.question p {
-    margin-top: 8px;
-    color: var(--texte-doux);
-    font-size: 0.9rem;
-}
-
-.btn-deconnexion-page {
-    justify-self: start;
-    width: auto;
-}
-
-/* =========================================================
-   Responsive (téléphone)
-   ========================================================= */
-@media (max-width: 800px) {
-    /* Connexion : on cache le panneau de présentation */
-    .auth-presentation {
-        display: none;
-    }
-
-    .auth-carte {
-        padding: 32px 16px;
-    }
-
-    /* Application : la barre latérale devient une barre d'onglets en bas */
-    .page-app {
-        flex-direction: column;
-    }
-
-    .barre-laterale {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 10;
-        width: 100%;
-        height: auto;
-        padding: 6px 4px;
-        background: var(--carte);
-        border-top: 1px solid var(--bordure);
-    }
-
-    .barre-laterale .logo,
-    .utilisateur,
-    .btn-deconnexion {
-        display: none;
-    }
-
-    /* Comme sur la maquette : 4 onglets seulement sur téléphone.
-       Enregistrés et Paramètres restent accessibles depuis le profil. */
-    .navigation .masque-mobile {
-        display: none;
-    }
-
-    .navigation {
-        flex-direction: row;
-        justify-content: space-around;
-        gap: 0;
-    }
-
-    .navigation a {
-        flex-direction: column;
-        gap: 2px;
-        padding: 6px 4px;
-        font-size: 0.68rem;
-        color: var(--texte-doux);
-    }
-
-    .navigation a:hover {
-        background: none;
-        color: var(--primaire);
-    }
-
-    .navigation a.actif {
-        background: none;
-        color: var(--primaire);
-    }
-
-    .contenu {
-        padding: 24px 16px 90px;
-    }
-
-    .contenu-entete h1 {
-        font-size: 1.4rem;
-    }
-
-    .grille-cartes {
-        gap: 12px;
-    }
-
-    .carte-menu {
-        padding: 20px 10px;
-    }
-
-    /* Paramètres : la liste déroulante passe sous le texte */
-    .reglage:has(.liste-choix) {
-        flex-wrap: wrap;
-    }
-
-    .liste-choix {
-        width: 100%;
-    }
-
-    .carte-reglages {
-        padding: 6px 16px 10px;
-    }
-
-    /* Messagerie : on voit soit la liste, soit la discussion */
-    .messagerie {
-        grid-template-columns: 1fr;
-    }
-
-    .page-messagerie .liste-discussions {
-        padding-bottom: 64px; /* place pour la barre d'onglets */
-        border-right: none;
-    }
-
-    .page-messagerie .chat {
-        display: none;
-    }
-
-    .page-messagerie.vue-chat .chat {
-        display: flex;
-    }
-
-    .page-messagerie.vue-chat .liste-discussions,
-    .page-messagerie.vue-chat .barre-laterale {
-        display: none;
-    }
-
-    .btn-retour {
-        display: grid;
-    }
-
-    .chat-entete,
-    .zone-saisie {
-        padding: 10px 12px;
-    }
-
-    .messages {
-        padding: 16px 12px;
-    }
-
-    .bulle {
-        max-width: 82%;
-    }
-
-    /* Sur téléphone, le bouton Résumer n'affiche que l'icône */
-    .btn-resumer span {
-        display: none;
-    }
-
-    .btn-resumer {
-        padding: 10px;
-    }
-
-    .panneau-emojis {
-        right: 12px;
-    }
-
-    /* Saisie plus compacte : 5 boutons + le champ sur un petit écran */
-    .zone-saisie {
-        gap: 4px;
-    }
-
-    .zone-saisie .btn-icone {
-        width: 34px;
-        height: 34px;
-        font-size: 1rem;
-    }
-
-    .zone-saisie input {
-        padding: 10px 14px;
-    }
-
-    .chat-entete {
-        gap: 8px;
-    }
-
-    .apercu-image,
-    .erreur-saisie {
-        margin-left: 12px;
-        margin-right: 12px;
-    }
-
-    /* Salons : le bouton « Créer » reste à côté du titre */
-    .btn-auto {
-        padding: 10px 14px;
-    }
-}
-/* =========================================================
-   Pages Contacts et Profil (contacts.html, profil.html)
-   ========================================================= */
-
-/* ---------- Grille des contacts ---------- */
-.grille-contacts {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
     list-style: none;
-    margin-top: 24px;
+    padding: 0;
 }
 
 .carte-contact {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 16px;
+    padding: 14px 18px;
     background: var(--carte);
     border: 1px solid var(--bordure);
     border-radius: var(--rayon);
     color: var(--texte);
     text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .carte-contact:hover {
@@ -2237,162 +1874,15 @@ label.reglage {
 .contact-nom {
     font-weight: 600;
     font-size: 1rem;
+    color: var(--texte);
 }
 
 .contact-statut {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--texte-doux);
-}
-
-.contact-statut.en-ligne {
-    color: var(--succes);
 }
 
 .contact-statut.ecrit {
-    color: var(--succes);
+    color: var(--succes) !important;
     font-style: italic;
-}
-
-/* ---------- Page Profil ---------- */
-.profil-conteneur {
-    max-width: 600px;
-    margin: 24px auto;
-    padding: 32px;
-    background: var(--carte);
-    border: 1px solid var(--bordure);
-    border-radius: var(--rayon);
-    box-shadow: var(--ombre);
-}
-
-.profil-entete {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--bordure);
-}
-
-.profil-entete .avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 1.5rem;
-}
-/* =========================================================
-   Fin de la fenêtre du résumé & Pages Contacts / Profil
-   ========================================================= */
-
-.resume-entete button {
-    border: none;
-    background: none;
-    color: var(--texte-doux);
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-.resume-corps {
-    overflow-y: auto;
-    max-height: calc(80vh - 100px);
-    padding-right: 4px;
-}
-
-.resume-section {
-    margin-bottom: 20px;
-}
-
-.resume-section h3 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    color: var(--primaire);
-    font-size: 0.95rem;
-}
-
-.resume-section ul {
-    list-style: disc;
-    padding-left: 20px;
-    color: var(--texte);
-    font-size: 0.9rem;
-}
-
-.resume-section li {
-    margin-bottom: 4px;
-}
-
-/* ---------- Grille des contacts (contacts.html) ---------- */
-.grille-contacts {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-    list-style: none;
-    margin-top: 24px;
-}
-
-.carte-contact {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px;
-    background: var(--carte);
-    border: 1px solid var(--bordure);
-    border-radius: var(--rayon);
-    color: var(--texte);
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.carte-contact:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--ombre);
-}
-
-.contact-infos {
-    flex: 1;
-    min-width: 0;
-}
-
-.contact-nom {
-    font-weight: 600;
-    font-size: 1rem;
-}
-
-.contact-statut {
-    font-size: 0.8rem;
-    color: var(--texte-doux);
-}
-
-.contact-statut.en-ligne {
-    color: var(--succes);
-}
-
-.contact-statut.ecrit {
-    color: var(--succes);
-    font-style: italic;
-}
-
-/* ---------- Page Profil (profil.html) ---------- */
-.profil-conteneur {
-    max-width: 600px;
-    margin: 24px auto;
-    padding: 32px;
-    background: var(--carte);
-    border: 1px solid var(--bordure);
-    border-radius: var(--rayon);
-    box-shadow: var(--ombre);
-}
-
-.profil-entete {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--bordure);
-}
-
-.profil-entete .avatar {
-    width: 64px;
-    height: 64px;
-    font-size: 1.5rem;
 }
