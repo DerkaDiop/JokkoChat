@@ -4,30 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier le profil - JokkoChat</title>
+    <!-- Script anti-flash du thème -->
+    <script src="js/theme.js"></script>
+    <!-- Feuille de style globale -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <header>
-    <a href="profil.html">☰</a>
-    <h1>✏️ Modifier le profil</h1>
-</header>
+<body class="page-app">
+    <!-- Barre latérale -->
+    <aside class="barre-laterale">
+        <div class="logo logo-clair">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Jokko<strong>Chat</strong></span>
+        </div>
 
-<hr>
-<form action="profil.html" method="get">
-    <label for="nom-utilisateur">Nom d'utilisateur :</label>
-<input type="text" id="nom-utilisateur" name="nom-utilisateur" value="Kader" required>
+        <nav class="navigation">
+            <a href="menu.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+            <a href="conversation.html"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+            <a href="contacts.html"><i class="fa-solid fa-user-group"></i><span>Contacts</span></a>
+            <a href="salons.html"><i class="fa-solid fa-users"></i><span>Salons</span></a>
+            <a href="messages-enregistres.html" class="masque-mobile"><i class="fa-solid fa-bookmark"></i><span>Enregistrés</span></a>
+            <a href="profil.html" class="actif"><i class="fa-regular fa-user"></i><span>Profil</span></a>
+            <a href="parametres.html" class="masque-mobile"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
+        </nav>
 
-<br><br>
-<label for="email">Email :</label>
-<input type="email" id="email" name="email" value="kader@example.com" required>
+        <div class="utilisateur">
+            <div class="avatar"><span class="initiale-utilisateur">K</span><span class="pastille en-ligne"></span></div>
+            <div>
+                <p class="utilisateur-nom nom-utilisateur">Kader</p>
+                <p class="utilisateur-statut">En ligne</p>
+            </div>
+        </div>
 
-<br><br>
-<label for="bio">À propos :</label>
-<textarea id="bio" name="bio" rows="4">Bienvenue sur mon profil JokkoChat !</textarea>
+        <a href="index.html" class="btn-deconnexion" id="btn-deconnexion" data-deconnexion>
+            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </a>
+    </aside>
 
-<br><br>
-<button type="submit">💾 Enregistrer les modifications</button>
+    <!-- Contenu principal -->
+    <main class="contenu">
+        <div class="contenu-entete">
+            <div>
+                <h1>Modifier le profil</h1>
+                <p>Mettez à jour votre nom, votre email et votre présentation.</p>
+            </div>
+        </div>
 
-</form>
+        <form id="form-profil" class="profil-conteneur" action="profil.html" novalidate>
+            <!-- Photo de profil -->
+            <div class="photo-profil">
+                <div class="avatar avatar-grand" id="apercu-photo"></div>
+                <div class="photo-actions">
+                    <label class="btn btn-secondaire btn-auto">
+                        <i class="fa-solid fa-camera"></i> Changer la photo
+                        <input type="file" id="champ-photo" accept="image/*" hidden>
+                    </label>
+                    <button type="button" class="lien-bouton lien-danger" id="btn-retirer-photo">Retirer la photo</button>
+                    <small class="erreur" id="erreur-photo"></small>
+                </div>
+            </div>
 
+            <div class="champ">
+                <label for="profil-nom">Nom d'utilisateur</label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="profil-nom" name="nom" autocomplete="name" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="profil-pseudo">Nom de profil <span class="optionnel">(pour qu'on vous trouve)</span></label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-at"></i>
+                    <input type="text" id="profil-pseudo" name="pseudo" placeholder="ex : kader_diop"
+                           maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ-groupe">
+                <div class="champ champ-pays">
+                    <label for="profil-pays">Pays</label>
+                    <div class="champ-saisie">
+                        <select id="profil-pays" name="pays"></select>
+                    </div>
+                </div>
+                <div class="champ champ-mobile">
+                    <label for="profil-telephone">Mobile <span class="optionnel">(facultatif)</span></label>
+                    <div class="champ-saisie">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                        <input type="tel" id="profil-telephone" name="telephone" maxlength="20" autocomplete="tel">
+                    </div>
+                    <small class="erreur"></small>
+                </div>
+            </div>
+
+            <div class="champ">
+                <label for="profil-email-champ">Email</label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="profil-email-champ" name="email" readonly>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="profil-bio-champ">À propos <span class="optionnel">(150 caractères max.)</span></label>
+                <div class="champ-saisie">
+                    <textarea id="profil-bio-champ" name="bio" rows="3" maxlength="150"
+                              placeholder="Présentez-vous en quelques mots"></textarea>
+                </div>
+            </div>
+
+            <div class="actions-profil">
+                <button type="submit" class="btn btn-principal btn-auto">
+                    <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+                </button>
+                <a href="profil.html" class="btn btn-secondaire btn-auto">Annuler</a>
+            </div>
+        </form>
+    </main>
+
+    <!-- Scripts de l'application -->
+    <script src="js/resume.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
+    <script src="js/donnees.js"></script>
 </body>
 </html>

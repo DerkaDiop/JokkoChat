@@ -49,6 +49,9 @@
         <section class="liste-discussions">
             <header class="liste-entete">
                 <h1>Conversations</h1>
+                <a href="contacts.html#nouveau" class="btn-rond" aria-label="Nouvelle discussion" title="Nouvelle discussion">
+                    <i class="fa-solid fa-user-plus"></i>
+                </a>
             </header>
             <div class="recherche">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -98,6 +101,30 @@
                     <div class="apercu-image" id="apercu-image" hidden>
                         <img id="apercu-image-img" alt="Image à envoyer">
                         <button type="button" id="btn-retirer-image" aria-label="Retirer l'image">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Réponse à un message -->
+                    <div class="bandeau-modification bandeau-reponse" id="bandeau-reponse" hidden>
+                        <i class="fa-solid fa-reply"></i>
+                        <div>
+                            <strong id="reponse-auteur"></strong>
+                            <p id="reponse-extrait"></p>
+                        </div>
+                        <button type="button" class="btn-icone" id="btn-annuler-reponse" aria-label="Annuler la réponse">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Message en cours de modification -->
+                    <div class="bandeau-modification" id="bandeau-modification" hidden>
+                        <i class="fa-solid fa-pen"></i>
+                        <div>
+                            <strong>Modifier le message</strong>
+                            <p id="texte-avant-modification"></p>
+                        </div>
+                        <button type="button" class="btn-icone" id="btn-annuler-modification" aria-label="Annuler la modification">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -220,6 +247,7 @@
     </dialog>
 
     <script src="js/resume.js"></script>
-    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
+    <script src="js/donnees.js"></script>
 </body>
 </html>

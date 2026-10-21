@@ -14,27 +14,30 @@
 <body class="page-app">
     <!-- Barre latérale -->
     <aside class="barre-laterale">
-        <div class="logo">
-            <i class="fa-solid fa-comments"></i>
+        <div class="logo logo-clair">
+            <i class="fa-solid fa-comment-dots"></i>
             <span>Jokko<strong>Chat</strong></span>
         </div>
+
         <nav class="navigation">
-            <a href="menu.html"><i class="fa-solid fa-house"></i> Accueil</a>
-            <a href="conversation.html"><i class="fa-solid fa-message"></i> Messages</a>
-            <a href="contacts.html"><i class="fa-solid fa-users"></i> Contacts</a>
-            <a href="salons.html"><i class="fa-solid fa-comments"></i> Salons</a>
-            <a href="messages-enregistres.html"><i class="fa-solid fa-bookmark"></i> Enregistrés</a>
-            <a href="profil.html" class="actif"><i class="fa-solid fa-user"></i> Profil</a>
-            <a href="parametres.html"><i class="fa-solid fa-gear"></i> Paramètres</a>
+            <a href="menu.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+            <a href="conversation.html"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+            <a href="contacts.html"><i class="fa-solid fa-user-group"></i><span>Contacts</span></a>
+            <a href="salons.html"><i class="fa-solid fa-users"></i><span>Salons</span></a>
+            <a href="messages-enregistres.html" class="masque-mobile"><i class="fa-solid fa-bookmark"></i><span>Enregistrés</span></a>
+            <a href="profil.html" class="actif"><i class="fa-regular fa-user"></i><span>Profil</span></a>
+            <a href="parametres.html" class="masque-mobile"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
         </nav>
+
         <div class="utilisateur">
-            <div class="avatar initiale-utilisateur">D</div>
+            <div class="avatar"><span class="initiale-utilisateur">K</span><span class="pastille en-ligne"></span></div>
             <div>
-                <div class="utilisateur-nom nom-utilisateur">Utilisateur</div>
-                <div class="utilisateur-statut">En ligne</div>
+                <p class="utilisateur-nom nom-utilisateur">Kader</p>
+                <p class="utilisateur-statut">En ligne</p>
             </div>
         </div>
-        <a href="index.html" class="btn-deconnexion" data-deconnexion>
+
+        <a href="index.html" class="btn-deconnexion" id="btn-deconnexion" data-deconnexion>
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
         </a>
     </aside>
@@ -48,20 +51,30 @@
             </div>
         </div>
 
-        <div class="profil-conteneur" style="margin-top: 24px;">
+        <div class="profil-conteneur">
             <div class="profil-entete">
                 <div class="avatar initiale-utilisateur">D</div>
                 <div>
-                    <h2 class="nom-utilisateur">Kader</h2>
+                    <h2 class="nom-complet-utilisateur">Kader</h2>
                     <p class="contact-statut en-ligne">En ligne</p>
                 </div>
             </div>
 
             <div class="champ">
                 <label>Nom d'utilisateur</label>
-                <p><strong class="nom-utilisateur">Kader</strong></p>
+                <p><strong class="nom-complet-utilisateur">Kader</strong></p>
             </div>
             
+            <div class="champ">
+                <label>Nom de profil</label>
+                <p><strong id="profil-pseudo-texte">Pas encore choisi</strong></p>
+            </div>
+
+            <div class="champ">
+                <label>Numéro</label>
+                <p><strong id="profil-telephone-texte">Non renseigné</strong></p>
+            </div>
+
             <div class="champ">
                 <label>Email</label>
                 <p><strong id="profil-email">kader@example.com</strong></p>
@@ -69,13 +82,16 @@
 
             <div class="champ">
                 <label>À propos</label>
-                <p style="color: var(--texte-doux); font-size: 0.9rem;">Bienvenue sur mon profil JokkoChat !</p>
+                <p id="profil-bio" class="profil-bio">Bienvenue sur mon profil JokkoChat !</p>
             </div>
 
-            <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <div class="actions-profil">
                 <a href="modifier-profil.html" class="btn btn-principal btn-auto">
                     <i class="fa-solid fa-pen"></i> Modifier le profil
                 </a>
+                <button type="button" class="btn btn-secondaire btn-auto" id="btn-mon-qr">
+                    <i class="fa-solid fa-qrcode"></i> Mon code QR
+                </button>
                 <a href="messages-enregistres.html" class="btn btn-secondaire btn-auto">
                     <i class="fa-solid fa-bookmark"></i> Messages enregistrés
                 </a>
@@ -86,8 +102,26 @@
         </div>
     </main>
 
+    <!-- Mon code QR -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-mon-qr">
+        <div class="fenetre-entete">
+            <h2>Mon code QR</h2>
+            <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="vue-qr">
+            <div class="cadre-qr" id="mon-qr"></div>
+            <p class="recente-nom nom-complet-utilisateur"></p>
+            <p class="recente-apercu" id="mon-qr-pseudo"></p>
+            <p class="aide-qr">Montrez ce code : la personne le scanne dans « Nouveau contact » pour vous ajouter.</p>
+        </div>
+    </dialog>
+
     <!-- Scripts de l'application -->
     <script src="js/resume.js"></script>
-    <script src="js/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
+    <script src="js/donnees.js"></script>
 </body>
 </html>

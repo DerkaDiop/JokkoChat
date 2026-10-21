@@ -103,6 +103,30 @@
                         </button>
                     </div>
 
+                    <!-- Réponse à un message -->
+                    <div class="bandeau-modification bandeau-reponse" id="bandeau-reponse" hidden>
+                        <i class="fa-solid fa-reply"></i>
+                        <div>
+                            <strong id="reponse-auteur"></strong>
+                            <p id="reponse-extrait"></p>
+                        </div>
+                        <button type="button" class="btn-icone" id="btn-annuler-reponse" aria-label="Annuler la réponse">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Message en cours de modification -->
+                    <div class="bandeau-modification" id="bandeau-modification" hidden>
+                        <i class="fa-solid fa-pen"></i>
+                        <div>
+                            <strong>Modifier le message</strong>
+                            <p id="texte-avant-modification"></p>
+                        </div>
+                        <button type="button" class="btn-icone" id="btn-annuler-modification" aria-label="Annuler la modification">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
                     <p class="erreur-saisie" id="erreur-saisie" role="alert" hidden></p>
 
                     <form class="zone-saisie" id="form-message">
@@ -166,6 +190,45 @@
     <div class="toast" id="toast" role="status" hidden></div>
 
     <!-- Fenêtre « Supprimer ? » -->
+    <!-- Infos d'un groupe privé : nom, membres, quitter -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-groupe-infos">
+        <div class="fenetre-entete">
+            <h2>Infos du groupe</h2>
+            <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="form-renommer" class="formulaire" novalidate>
+            <div class="champ">
+                <label for="infos-nom">Nom du groupe</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-user-group"></i>
+                    <input type="text" id="infos-nom" maxlength="30" required>
+                    <button type="submit" class="lien-bouton" id="btn-renommer">Renommer</button>
+                </div>
+                <small class="erreur"></small>
+            </div>
+        </form>
+
+        <h3 class="titre-liste">Membres <small id="infos-nombre"></small></h3>
+        <ul class="liste-choix-contacts" id="infos-membres"></ul>
+
+        <div id="zone-ajout-membres" hidden>
+            <h3 class="titre-liste">Ajouter des membres</h3>
+            <ul class="liste-choix-contacts" id="infos-ajout"></ul>
+            <button type="button" class="btn btn-secondaire" id="btn-ajouter-membres">
+                <i class="fa-solid fa-user-plus"></i> Ajouter les membres cochés
+            </button>
+        </div>
+
+        <div class="fenetre-actions">
+            <button type="button" class="btn btn-danger" id="btn-quitter-groupe">
+                <i class="fa-solid fa-right-from-bracket"></i> Quitter le groupe
+            </button>
+        </div>
+    </dialog>
+
     <dialog class="fenetre" id="fenetre-supprimer" aria-labelledby="supprimer-titre">
         <h2 id="supprimer-titre">Supprimer le message ?</h2>
         <p class="fenetre-texte" id="supprimer-texte"></p>
@@ -221,6 +284,7 @@
     </dialog>
 
     <script src="js/resume.js"></script>
-    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
+    <script src="js/donnees.js"></script>
 </body>
 </html>

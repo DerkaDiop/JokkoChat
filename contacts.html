@@ -14,27 +14,30 @@
 <body class="page-app">
     <!-- Barre latérale -->
     <aside class="barre-laterale">
-        <div class="logo">
-            <i class="fa-solid fa-comments"></i>
+        <div class="logo logo-clair">
+            <i class="fa-solid fa-comment-dots"></i>
             <span>Jokko<strong>Chat</strong></span>
         </div>
+
         <nav class="navigation">
-            <a href="menu.html"><i class="fa-solid fa-house"></i> Accueil</a>
-            <a href="conversation.html"><i class="fa-solid fa-message"></i> Messages</a>
-            <a href="contacts.html" class="actif"><i class="fa-solid fa-users"></i> Contacts</a>
-            <a href="salons.html"><i class="fa-solid fa-comments"></i> Salons</a>
-            <a href="messages-enregistres.html"><i class="fa-solid fa-bookmark"></i> Enregistrés</a>
-            <a href="profil.html"><i class="fa-solid fa-user"></i> Profil</a>
-            <a href="parametres.html"><i class="fa-solid fa-gear"></i> Paramètres</a>
+            <a href="menu.html"><i class="fa-solid fa-house"></i><span>Accueil</span></a>
+            <a href="conversation.html"><i class="fa-solid fa-comments"></i><span>Messages</span></a>
+            <a href="contacts.html" class="actif"><i class="fa-solid fa-user-group"></i><span>Contacts</span></a>
+            <a href="salons.html"><i class="fa-solid fa-users"></i><span>Salons</span></a>
+            <a href="messages-enregistres.html" class="masque-mobile"><i class="fa-solid fa-bookmark"></i><span>Enregistrés</span></a>
+            <a href="profil.html"><i class="fa-regular fa-user"></i><span>Profil</span></a>
+            <a href="parametres.html" class="masque-mobile"><i class="fa-solid fa-gear"></i><span>Paramètres</span></a>
         </nav>
+
         <div class="utilisateur">
-            <div class="avatar initiale-utilisateur">D</div>
+            <div class="avatar"><span class="initiale-utilisateur">K</span><span class="pastille en-ligne"></span></div>
             <div>
-                <div class="utilisateur-nom nom-utilisateur">Utilisateur</div>
-                <div class="utilisateur-statut">En ligne</div>
+                <p class="utilisateur-nom nom-utilisateur">Kader</p>
+                <p class="utilisateur-statut">En ligne</p>
             </div>
         </div>
-        <a href="index.html" class="btn-deconnexion" data-deconnexion>
+
+        <a href="index.html" class="btn-deconnexion" id="btn-deconnexion" data-deconnexion>
             <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
         </a>
     </aside>
@@ -46,27 +49,199 @@
                 <h1>Contacts</h1>
                 <p>Retrouvez et discutez avec vos contacts.</p>
             </div>
+            <button type="button" class="btn-rond" id="btn-nouvelle-discussion"
+                    aria-label="Nouvelle discussion" title="Nouvelle discussion">
+                <i class="fa-solid fa-user-plus"></i>
+            </button>
         </div>
 
         <!-- Zone de recherche de contacts -->
         <div class="zone-recherche">
             <div class="recherche">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="recherche-contacts" placeholder="Rechercher un contact...">
+                <input type="search" id="recherche-contacts" placeholder="Nom, numéro, @nomdeprofil"
+                       aria-label="Rechercher un contact par nom, numéro ou @nomdeprofil">
             </div>
         </div>
 
         <!-- Liste des contacts (générée ou affichée dynamiquement par script.js) -->
         <section>
-            <h2 style="font-size: 1.1rem; margin-bottom: 12px;">Mes contacts</h2>
+            <h2 class="titre-section">Mes contacts</h2>
             <ul id="liste-contacts" class="grille-contacts">
                 <!-- Les contacts s'afficheront ici automatiquement -->
             </ul>
+            <p class="aucun-resultat" id="aucun-contact" hidden>
+                Aucun contact pour l'instant. Cliquez sur <i class="fa-solid fa-user-plus"></i> pour en ajouter.
+            </p>
         </section>
     </main>
 
+    <!-- Nouvelle discussion : options + liste des contacts -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-nouvelle">
+        <div class="fenetre-entete">
+            <h2>Nouvelle discussion</h2>
+            <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <ul class="liste-choix-contacts">
+            <li>
+                <button type="button" class="option-nouvelle" id="btn-nouveau-groupe">
+                    <span class="avatar avatar-action"><i class="fa-solid fa-user-group"></i></span>
+                    Nouveau groupe
+                </button>
+            </li>
+            <li>
+                <button type="button" class="option-nouvelle" id="btn-nouveau-contact">
+                    <span class="avatar avatar-action"><i class="fa-solid fa-user-plus"></i></span>
+                    Nouveau contact
+                </button>
+            </li>
+        </ul>
+        <h3 class="titre-liste">Mes contacts</h3>
+        <ul class="liste-choix-contacts" id="nouvelle-liste-contacts"></ul>
+    </dialog>
+
+    <!-- Nouveau contact : comme le répertoire d'un téléphone -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-contact">
+        <form id="form-contact" class="formulaire" method="dialog" novalidate>
+            <div class="fenetre-entete">
+                <button type="button" class="btn-icone" data-retour aria-label="Retour">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2>Nouveau contact</h2>
+                <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <button type="button" class="option-nouvelle option-qr" id="btn-ouvrir-qr">
+                <span class="avatar avatar-action"><i class="fa-solid fa-qrcode"></i></span>
+                Ajouter via un code QR
+            </button>
+
+            <div class="champ">
+                <label for="contact-prenom">Prénom</label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="contact-prenom" name="prenom" maxlength="40" autocomplete="off" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ">
+                <label for="contact-nom">Nom <span class="optionnel">(facultatif)</span></label>
+                <div class="champ-saisie">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="contact-nom" name="nom" maxlength="40" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="champ">
+                <label for="contact-pseudo">Nom de profil</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-at"></i>
+                    <input type="text" id="contact-pseudo" name="pseudo" placeholder="nomdeprofil" maxlength="21"
+                           autocomplete="off" autocapitalize="none" spellcheck="false">
+                </div>
+                <small class="erreur"></small>
+            </div>
+
+            <div class="champ-groupe">
+                <div class="champ champ-pays">
+                    <label for="contact-pays">Pays</label>
+                    <div class="champ-saisie">
+                        <select id="contact-pays" name="pays"></select>
+                    </div>
+                </div>
+                <div class="champ champ-mobile">
+                    <label for="contact-mobile">Mobile</label>
+                    <div class="champ-saisie">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                        <input type="tel" id="contact-mobile" name="mobile" maxlength="20" autocomplete="off">
+                    </div>
+                    <small class="erreur"></small>
+                </div>
+            </div>
+
+            <p class="indice-contact" id="indice-contact" hidden></p>
+
+            <div class="fenetre-actions">
+                <button type="submit" class="btn btn-principal">Enregistrer</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Code QR : le mien, ou scanner celui d'un autre -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-qr">
+        <div class="fenetre-entete">
+            <button type="button" class="btn-icone" id="btn-retour-qr" aria-label="Retour">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2>Code QR</h2>
+            <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="onglets onglets-qr" role="tablist">
+            <button type="button" class="onglet actif" id="onglet-mon-qr" role="tab" aria-selected="true">Mon code</button>
+            <button type="button" class="onglet" id="onglet-scanner" role="tab" aria-selected="false">Scanner</button>
+        </div>
+
+        <div id="vue-mon-qr" class="vue-qr">
+            <div class="cadre-qr" id="mon-qr"></div>
+            <p class="recente-nom nom-complet-utilisateur"></p>
+            <p class="recente-apercu" id="mon-qr-pseudo"></p>
+            <p class="aide-qr">Montrez ce code : la personne le scanne dans « Nouveau contact » pour vous ajouter.</p>
+        </div>
+
+        <div id="vue-scanner" class="vue-qr" hidden>
+            <div class="cadre-camera">
+                <video id="camera-qr" playsinline muted></video>
+                <span class="viseur" aria-hidden="true"></span>
+            </div>
+            <p class="aide-qr" id="aide-scanner">Placez le code QR dans le cadre.</p>
+            <label class="btn btn-secondaire btn-auto">
+                <i class="fa-regular fa-image"></i> Importer une image du code
+                <input type="file" id="image-qr" accept="image/*" hidden>
+            </label>
+        </div>
+    </dialog>
+
+    <!-- Nouveau groupe : nom + membres -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-groupe">
+        <form id="form-groupe" class="formulaire" method="dialog" novalidate>
+            <div class="fenetre-entete">
+                <button type="button" class="btn-icone" data-retour aria-label="Retour">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2>Nouveau groupe</h2>
+                <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="champ">
+                <label for="nom-groupe">Nom du groupe</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-user-group"></i>
+                    <input type="text" id="nom-groupe" name="nom" placeholder="Ex : Projet Web" maxlength="30" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+            <h3 class="titre-liste">Membres <small id="nombre-membres"></small></h3>
+            <ul class="liste-choix-contacts" id="membres-groupe"></ul>
+            <small class="erreur" id="erreur-membres"></small>
+            <div class="fenetre-actions">
+                <button type="submit" class="btn btn-principal">Créer le groupe</button>
+            </div>
+        </form>
+    </dialog>
+
     <!-- Scripts de l'application -->
     <script src="js/resume.js"></script>
-    <script src="js/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
+    <script src="js/donnees.js"></script>
 </body>
 </html>

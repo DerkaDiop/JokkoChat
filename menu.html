@@ -55,7 +55,7 @@
                 <button type="button" class="btn-cloche" id="btn-cloche" aria-label="Notifications"
                         aria-expanded="false" aria-controls="panneau-notifications">
                     <i class="fa-regular fa-bell"></i>
-                    <span class="badge" id="badge-notifications">3</span>
+                    <span class="badge" id="badge-notifications" hidden></span>
                 </button>
 
                 <div class="panneau-notifications" id="panneau-notifications" hidden>
@@ -63,29 +63,7 @@
                         <h2>Notifications</h2>
                         <button type="button" id="btn-tout-lu">Tout marquer comme lu</button>
                     </div>
-                    <ul>
-                        <li class="non-lue">
-                            <a href="conversation.html?contact=ali">
-                                <i class="fa-solid fa-comment"></i>
-                                <span><strong>Ali</strong> vous a envoyé un message</span>
-                                <small>10:20</small>
-                            </a>
-                        </li>
-                        <li class="non-lue">
-                            <a href="conversation-salon.html?salon=general">
-                                <i class="fa-solid fa-hashtag"></i>
-                                <span>Nouveau message dans <strong># Général</strong></span>
-                                <small>10:18</small>
-                            </a>
-                        </li>
-                        <li class="non-lue">
-                            <a href="conversation-salon.html?salon=projets">
-                                <i class="fa-solid fa-user-plus"></i>
-                                <span><strong>Awa</strong> a rejoint <strong># Projets</strong></span>
-                                <small>Hier</small>
-                            </a>
-                        </li>
-                    </ul>
+                    <ul id="liste-notifications"></ul>
                 </div>
             </div>
         </header>
@@ -127,70 +105,7 @@
         <!-- Conversations récentes -->
         <section class="recentes">
             <h2>Conversations récentes</h2>
-            <ul>
-                <li>
-                    <a href="conversation.html?contact=ali">
-                        <div class="avatar">A<span class="pastille en-ligne"></span></div>
-                        <div class="recente-texte">
-                            <p class="recente-nom">Ali</p>
-                            <p class="recente-apercu">Vous : Oui, elle est géniale ! 👍</p>
-                        </div>
-                        <div class="recente-infos">
-                            <small>10:20</small>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="conversation-salon.html?salon=general">
-                        <div class="avatar avatar-salon"><i class="fa-solid fa-hashtag"></i></div>
-                        <div class="recente-texte">
-                            <p class="recente-nom">Général</p>
-                            <p class="recente-apercu">Awa : Bienvenue dans le salon Général ! 🎉</p>
-                        </div>
-                        <div class="recente-infos">
-                            <small>10:18</small>
-                            <span class="badge">2</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="conversation.html?contact=fatou">
-                        <div class="avatar">F<span class="pastille en-ligne"></span></div>
-                        <div class="recente-texte">
-                            <p class="recente-nom">Fatou</p>
-                            <p class="recente-apercu ecrit">En train d'écrire...</p>
-                        </div>
-                        <div class="recente-infos">
-                            <small>09:45</small>
-                            <span class="badge">1</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="conversation-salon.html?salon=projets">
-                        <div class="avatar avatar-salon"><i class="fa-solid fa-hashtag"></i></div>
-                        <div class="recente-texte">
-                            <p class="recente-nom">Projets</p>
-                            <p class="recente-apercu">Moussa : On se retrouve demain pour le TP ?</p>
-                        </div>
-                        <div class="recente-infos">
-                            <small>Hier</small>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="conversation.html?contact=moussa">
-                        <div class="avatar">M<span class="pastille"></span></div>
-                        <div class="recente-texte">
-                            <p class="recente-nom">Moussa</p>
-                            <p class="recente-apercu">D'accord, merci !</p>
-                        </div>
-                        <div class="recente-infos">
-                            <small>Hier</small>
-                        </div>
-                    </a>
-                </li>
-            </ul>
+            <ul id="liste-recentes"></ul>
         </section>
 
         <aside class="astuce">
@@ -202,6 +117,7 @@
         </aside>
     </main>
 
-    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.js"></script>
+    <script src="js/donnees.js"></script>
 </body>
 </html>

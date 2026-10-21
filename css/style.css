@@ -3,78 +3,75 @@
    ========================================================= */
 
 /* ---------- Variables (couleurs, arrondis, ombres) ---------- */
-/* ---------- Variables (Gris élégants & Mauves) ---------- */
 :root {
-    --primaire: #6366f1;
-    --primaire-fonce: #4f46e5;
-    --primaire-clair: #f3f4f6;
-    --violet: #8b5cf6;
+    --primaire: #4f46e5;
+    --primaire-fonce: #4338ca;
+    --primaire-clair: #eef0ff;
+    --violet: #7c5cf6;
 
-    --fond: #f9fafb;
+    --fond: #f4f5fb;
     --carte: #ffffff;
-    --texte: #1f2937;
-    --texte-doux: #6b7280;
-    --bordure: #e5e7eb;
+    --texte: #1e1f3b;
+    --texte-doux: #6b7091;
+    --bordure: #e3e5f0;
 
-    /* Remplacement du noir lourd par des gris/mauves profonds mais doux */
-    --sombre: #2d2b42;
-    --sombre-survol: #3d3a59;
+    --sombre: #12142b;
+    --sombre-survol: #1f2245;
 
     --succes: #22c55e;
-    --danger: #ef4444;
+    --danger: #e5484d;
 
+    /* Couleurs secondaires (changent avec le thème sombre) */
     --champ: #ffffff;
-    --bulle-envoyee: #ede9fe;
-    --danger-clair: #fee2e2;
-    --danger-clair-survol: #fecaca;
-    --info-fond: #fef3c7;
-    --info-texte: #b45309;
-    --attention: #d97706;
-    --non-lue: #f5f3ff;
+    --bulle-envoyee: #e2ddff;
+    --danger-clair: #fdecec;
+    --danger-clair-survol: #fad4d5;
+    --info-fond: #fff7e0;
+    --info-texte: #8a6100;
+    --attention: #b07800;
+    --non-lue: #f7f7ff;
 
     --rayon: 14px;
     --rayon-petit: 10px;
-    --ombre: 0 8px 24px rgba(79, 70, 229, 0.06);
+    --ombre: 0 8px 24px rgba(30, 31, 59, 0.08);
 
     color-scheme: light;
 }
 
-/* ---------- Thème sombre (Gris ardoise & Mauve lumineux) ---------- */
-[data-theme="sombre"],
+/* ---------- Thème sombre ----------
+   Le thème est choisi dans parametres.html et appliqué par js/theme.js
+   (attribut data-theme sur la balise <html>). */
 :root[data-theme="sombre"] {
-    --primaire: #818cf8;
-    --primaire-fonce: #6366f1;
-    --primaire-clair: #2e2a47;
-    --violet: #a78bfa;
+    --primaire: #6d66f2;
+    --primaire-fonce: #5b53e8;
+    --primaire-clair: #262852;
+    --violet: #8b7bff;
 
-    --fond: #181622;
-    --carte: #221f33;
-    --texte: #f3f4f6;
-    --texte-doux: #9ca3af;
-    --bordure: #36324d;
+    --fond: #0f1123;
+    --carte: #1a1d36;
+    --texte: #e8e9f5;
+    --texte-doux: #9a9ec0;
+    --bordure: #2c3052;
 
-    --sombre: #14121c;
-    --sombre-survol: #282438;
+    --sombre: #0a0b1a;
+    --sombre-survol: #1c1f3d;
 
-    --succes: #34d399;
-    --champ: #1d1a29;
-    --bulle-envoyee: #3b335c;
-    --danger-clair: #4c1d25;
-    --danger-clair-survol: #65202d;
-    --info-fond: #453616;
-    --info-texte: #fcd34d;
-    --attention: #fbbf24;
-    --non-lue: #2c2447;
+    --champ: #14162c;
+    --bulle-envoyee: #3a3480;
+    --danger-clair: #3b1e26;
+    --danger-clair-survol: #4a2430;
+    --info-fond: #3a3015;
+    --info-texte: #f0c86a;
+    --attention: #f0b84a;
+    --non-lue: #20234a;
 
-    --ombre: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --ombre: 0 8px 24px rgba(0, 0, 0, 0.4);
 
     color-scheme: dark;
 }
 
 /* ---------- Base ---------- */
-*,
-*::before,
-*::after {
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -819,8 +816,8 @@ textarea {
     font-size: 1.4rem;
 }
 
-.icone-bleu    { background: #3b82f6; }
-.icone-vert    { background: #22c55e; }
+.icone-bleu   { background: #3b82f6; }
+.icone-vert   { background: #22c55e; }
 .icone-violet { background: #8b5cf6; }
 .icone-orange { background: #f97316; }
 
@@ -1356,7 +1353,7 @@ button.vue-unique:hover span:last-child {
 
 @keyframes rebond {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30%          { transform: translateY(-4px); opacity: 1; }
+    30%           { transform: translateY(-4px); opacity: 1; }
 }
 
 /* ---------- Zone de saisie ---------- */
@@ -1445,6 +1442,7 @@ button.vue-unique:hover span:last-child {
 }
 
 /* ---------- Message vocal ---------- */
+/* Pendant l'enregistrement, la barre remplace le champ de texte */
 .zone-saisie.en-enregistrement #btn-image,
 .zone-saisie.en-enregistrement #champ-message,
 .zone-saisie.en-enregistrement #btn-emoji,
@@ -1517,7 +1515,6 @@ button.vue-unique:hover span:last-child {
     color: var(--danger);
     font-size: 0.8rem;
 }
-
 .zone-saisie {
     display: flex;
     align-items: center;
@@ -1731,117 +1728,481 @@ button.vue-unique:hover span:last-child {
 .resume-entete h2 {
     font-size: 1.2rem;
 }
-/* =========================================================
-   Correction des couleurs de statut (En ligne, En train d'écrire...)
-   ========================================================= */
 
-/* Pastille verte pour les contacts en ligne */
-.pastille.en-ligne {
-    background: var(--succes) !important;
+.resume-entete h2 i {
+    color: var(--primaire);
 }
 
-/* Texte "En train d'écrire..." en vert */
-.recente-apercu.ecrit,
-#chat-statut.ecrit {
-    color: var(--succes) !important;
-    font-style: italic;
-}
-
-/* Si vous avez d'autres indicateurs textuels de statut */
-.utilisateur-statut[data-statut="en-ligne"],
-.statut-en-ligne {
-    color: var(--succes) !important;
-
-}
-/* =========================================================
-   Statuts "En ligne" et "Hors ligne" en vert
-   ========================================================= */
-
-/* Pastilles de statut (les deux utilisent la couleur verte) */
-.pastille.en-ligne,
-.pastille {
-    background: var(--succes) !important;
-}
-
-/* Textes de statut (En ligne, Hors ligne, En train d'écrire) en vert */
-.contact-statut,
-.utilisateur-statut,
-.recente-apercu.ecrit,
-#chat-statut.ecrit {
-    color: var(--succes) !important;
-    font-style: normal; /* Restera droit ou italique selon vos préférences */
-}
-/* =========================================================
-   Mise en page de la page Paramètres (parametres.html)
-   ========================================================= */
-
-.section-parametres,
-.contenu form,
-.contenu > div {
+.btn-fermer {
     display: grid;
-    gap: 12px;
-    margin-bottom: 32px;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--fond);
+    cursor: pointer;
 }
 
-/* Style des cartes de paramètres (similaire aux cartes de salons) */
-.contenu label:has(input[type="checkbox"]),
-.contenu label:has(input[type="radio"]),
-.contenu .carte-parametre {
-    display: flex;
+.resume-stats {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: var(--rayon-petit);
+    background: var(--primaire-clair);
+    color: var(--primaire);
+    font-size: 0.85rem;
+}
+
+#contenu-resume h3 {
+    margin: 16px 0 6px;
+    font-size: 0.95rem;
+}
+
+#contenu-resume ul {
+    display: grid;
+    gap: 6px;
+    padding-left: 20px;
+    font-size: 0.9rem;
+}
+
+.resume-note {
+    margin-top: 18px;
+    color: var(--texte-doux);
+    font-size: 0.75rem;
+}
+
+/* ---------- Visionneuse (image en grand) ---------- */
+.visionneuse {
+    margin: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: zoom-out;
+}
+
+.visionneuse::backdrop {
+    background: rgba(18, 20, 43, 0.85);
+}
+
+.visionneuse img {
+    display: block;
+    max-width: 92vw;
+    max-height: 88vh;
+    border-radius: var(--rayon-petit);
+}
+
+/* =========================================================
+   Paramètres (parametres.html)
+   ========================================================= */
+.page-parametres {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr); /* empêche le contenu de déborder sur petit écran */
+    gap: 20px;
+    align-content: start;
+    min-width: 0;
+}
+
+.page-parametres .contenu-entete {
+    justify-content: flex-start;
     align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
+}
+
+.reglages {
+    display: grid;
+    gap: 20px;
+}
+
+.carte-reglages {
+    padding: 8px 20px 12px;
     background: var(--carte);
     border: 1px solid var(--bordure);
     border-radius: var(--rayon);
-    color: var(--texte);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.contenu label:has(input[type="checkbox"]):hover,
-.contenu label:has(input[type="radio"]):hover {
-    transform: translateY(-2px);
-    box-shadow: var(--ombre);
-}
-
-.contenu input[type="checkbox"],
-.contenu input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--primaire);
-    cursor: pointer;
-}
-
-/* Titres de sections avec icônes (comme dans les salons) */
-.contenu h2 {
+.carte-reglages h2 {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 1.25rem;
-    margin-bottom: 14px;
+    gap: 10px;
+    padding: 12px 0 4px;
+    font-size: 1.05rem;
+}
+
+.carte-reglages h2 i {
+    color: var(--primaire);
+}
+
+/* Une ligne de réglage : texte à gauche, contrôle à droite */
+.reglage {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+    padding: 14px 0;
+    border: none;
+    border-top: 1px solid var(--bordure);
     color: var(--texte);
 }
 
-/* Textes descriptifs à l'intérieur des options */
-.contenu label div, 
-.contenu label span {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+.carte-reglages h2 + .reglage {
+    border-top: none;
 }
 
-.contenu small, 
-.contenu p.description {
+label.reglage {
+    cursor: pointer;
+}
+
+.reglage-colonne {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.reglage-texte {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    float: none;
+}
+
+.reglage-texte small,
+.reglage-note {
     color: var(--texte-doux);
     font-size: 0.82rem;
 }
+
+.reglage-verrou {
+    color: var(--texte-doux);
+}
+
+.reglage-lien:hover strong {
+    color: var(--primaire);
+}
+
+.reglage-lien > i {
+    color: var(--texte-doux);
+}
+
+/* Interrupteur (case à cocher en forme de bouton glissant) */
+.interrupteur {
+    position: relative;
+    flex-shrink: 0;
+    width: 46px;
+    height: 26px;
+    border-radius: 999px;
+    background: var(--bordure);
+    appearance: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.interrupteur::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s;
+}
+
+.interrupteur:checked {
+    background: var(--primaire);
+}
+
+.interrupteur:checked::before {
+    transform: translateX(20px);
+}
+
+.interrupteur:focus-visible,
+.choix-segmente button:focus-visible {
+    outline: 3px solid var(--primaire-clair);
+    outline-offset: 2px;
+}
+
+.liste-choix {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    background: var(--champ);
+    border: 1px solid var(--bordure);
+    border-radius: var(--rayon-petit);
+}
+
+/* Choix du thème : deux boutons côte à côte */
+.choix-segmente {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    margin-top: 10px;
+    padding: 4px;
+    background: var(--fond);
+    border-radius: var(--rayon-petit);
+}
+
+.choix-segmente button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.choix-segmente button:hover {
+    background: var(--primaire-clair);
+}
+
+.choix-segmente button[aria-pressed="true"] {
+    background: var(--primaire);
+    color: #ffffff;
+}
+
+/* Jauge du stockage */
+.jauge {
+    height: 10px;
+    margin: 10px 0 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--fond);
+}
+
+.jauge span {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    border-radius: 999px;
+    background: var(--primaire);
+    transition: width 0.3s;
+}
+
+.jauge.presque-pleine span {
+    background: var(--danger);
+}
+
+.reglage-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 4px 0 8px;
+}
+
+/* Aide : questions qui s'ouvrent */
+.question {
+    padding: 12px 0;
+    border-top: 1px solid var(--bordure);
+}
+
+.carte-reglages h2 + .question {
+    border-top: none;
+}
+
+.question summary {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.question p {
+    margin-top: 8px;
+    color: var(--texte-doux);
+    font-size: 0.9rem;
+}
+
+.btn-deconnexion-page {
+    justify-self: start;
+    width: auto;
+}
+
 /* =========================================================
-   Mise en page de la liste des contacts (contacts.html)
+   Responsive (téléphone)
    ========================================================= */
-.liste-contacts {
+@media (max-width: 800px) {
+    /* Connexion : on cache le panneau de présentation */
+    .auth-presentation {
+        display: none;
+    }
+
+    .auth-carte {
+        padding: 32px 16px;
+    }
+
+    /* Application : la barre latérale devient une barre d'onglets en bas */
+    .page-app {
+        flex-direction: column;
+    }
+
+    .barre-laterale {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        width: 100%;
+        height: auto;
+        padding: 6px 4px;
+        background: var(--carte);
+        border-top: 1px solid var(--bordure);
+    }
+
+    .barre-laterale .logo,
+    .utilisateur,
+    .btn-deconnexion {
+        display: none;
+    }
+
+    /* Comme sur la maquette : 4 onglets seulement sur téléphone.
+       Enregistrés et Paramètres restent accessibles depuis le profil. */
+    .navigation .masque-mobile {
+        display: none;
+    }
+
+    .navigation {
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 0;
+    }
+
+    .navigation a {
+        flex-direction: column;
+        gap: 2px;
+        padding: 6px 4px;
+        font-size: 0.68rem;
+        color: var(--texte-doux);
+    }
+
+    .navigation a:hover {
+        background: none;
+        color: var(--primaire);
+    }
+
+    .navigation a.actif {
+        background: none;
+        color: var(--primaire);
+    }
+
+    .contenu {
+        padding: 24px 16px 90px;
+    }
+
+    .contenu-entete h1 {
+        font-size: 1.4rem;
+    }
+
+    .grille-cartes {
+        gap: 12px;
+    }
+
+    .carte-menu {
+        padding: 20px 10px;
+    }
+
+    /* Paramètres : la liste déroulante passe sous le texte */
+    .reglage:has(.liste-choix) {
+        flex-wrap: wrap;
+    }
+
+    .liste-choix {
+        width: 100%;
+    }
+
+    .carte-reglages {
+        padding: 6px 16px 10px;
+    }
+
+    /* Messagerie : on voit soit la liste, soit la discussion */
+    .messagerie {
+        grid-template-columns: 1fr;
+    }
+
+    .page-messagerie .liste-discussions {
+        padding-bottom: 64px; /* place pour la barre d'onglets */
+        border-right: none;
+    }
+
+    .page-messagerie .chat {
+        display: none;
+    }
+
+    .page-messagerie.vue-chat .chat {
+        display: flex;
+    }
+
+    .page-messagerie.vue-chat .liste-discussions,
+    .page-messagerie.vue-chat .barre-laterale {
+        display: none;
+    }
+
+    .btn-retour {
+        display: grid;
+    }
+
+    .chat-entete,
+    .zone-saisie {
+        padding: 10px 12px;
+    }
+
+    .messages {
+        padding: 16px 12px;
+    }
+
+    .bulle {
+        max-width: 82%;
+    }
+
+    /* Sur téléphone, le bouton Résumer n'affiche que l'icône */
+    .btn-resumer span {
+        display: none;
+    }
+
+    .btn-resumer {
+        padding: 10px;
+    }
+
+    .panneau-emojis {
+        right: 12px;
+    }
+
+    /* Saisie plus compacte : 5 boutons + le champ sur un petit écran */
+    .zone-saisie {
+        gap: 4px;
+    }
+
+    .zone-saisie .btn-icone {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+
+    .zone-saisie input {
+        padding: 10px 14px;
+    }
+
+    .chat-entete {
+        gap: 8px;
+    }
+
+    .apercu-image,
+    .erreur-saisie {
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+
+    /* Salons : le bouton « Créer » reste à côté du titre */
+    .btn-auto {
+        padding: 10px 14px;
+    }
+}
+
+/* =========================================================
+   Liste des contacts (contacts.html)
+   ========================================================= */
+.grille-contacts {
     display: grid;
     gap: 10px;
     list-style: none;
@@ -1882,7 +2243,466 @@ button.vue-unique:hover span:last-child {
     color: var(--texte-doux);
 }
 
+.contact-statut.ecrit,
+.contact-statut.en-ligne {
+    color: var(--succes);
+}
+
 .contact-statut.ecrit {
-    color: var(--succes) !important;
     font-style: italic;
+}
+
+/* =========================================================
+   Profil (profil.html)
+   ========================================================= */
+.profil-conteneur {
+    max-width: 640px;
+    margin-top: 24px;
+    padding: 24px;
+    background: var(--carte);
+    border: 1px solid var(--bordure);
+    border-radius: var(--rayon);
+}
+
+.profil-entete {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.profil-entete .avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 1.6rem;
+}
+
+.profil-conteneur .champ {
+    margin-bottom: 14px;
+}
+
+/* Bouton « retirer » dans les messages enregistrés */
+.recente-infos .btn-icone {
+    color: var(--primaire);
+}
+
+.profil-bio {
+    color: var(--texte-doux);
+    font-size: 0.9rem;
+}
+
+.actions-profil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.champ-saisie textarea {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    resize: vertical;
+}
+
+/* =========================================================
+   Nouvelle discussion : contact, groupe (contacts.html)
+   ========================================================= */
+.btn-rond {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primaire);
+    color: #ffffff;
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: var(--ombre);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-rond:hover {
+    background: var(--primaire-fonce);
+    transform: scale(1.05);
+}
+
+.titre-section {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.fenetre-liste {
+    background: var(--carte);
+    color: var(--texte);
+    width: min(460px, calc(100vw - 32px));
+    max-height: min(640px, calc(100vh - 32px));
+    padding: 20px;
+}
+
+.fenetre-entete {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.fenetre-entete h2 {
+    flex: 1;
+    font-size: 1.15rem;
+    text-align: left;
+}
+
+.fenetre-liste .recherche {
+    margin-bottom: 10px;
+}
+
+.titre-liste {
+    margin: 14px 4px 6px;
+    color: var(--texte-doux);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.titre-liste small {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+}
+
+.liste-choix-contacts {
+    list-style: none;
+    padding: 0;
+}
+
+.option-nouvelle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 8px;
+    border: none;
+    border-radius: var(--rayon-petit);
+    background: transparent;
+    color: var(--texte);
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+.option-nouvelle:hover {
+    background: var(--primaire-clair);
+}
+
+.option-nouvelle .recente-texte {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.option-nouvelle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primaire);
+}
+
+.avatar-action {
+    background: var(--primaire);
+}
+
+.fenetre-liste .fenetre-actions {
+    margin-top: 16px;
+}
+
+.fenetre-liste .fenetre-actions .btn {
+    width: 100%;
+}
+
+/* ---------- Nouveau contact : pays + mobile, indice ---------- */
+.champ-groupe {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: 10px;
+}
+
+.champ-pays select {
+    padding: 11px 0;
+    text-overflow: ellipsis;
+}
+
+.indice-contact {
+    margin: 2px 0 6px;
+    padding: 10px 12px;
+    border-radius: var(--rayon-petit);
+    background: var(--fond);
+    color: var(--texte-doux);
+    font-size: 0.85rem;
+}
+
+.indice-contact.indice-ok {
+    background: color-mix(in srgb, var(--succes) 12%, transparent);
+    color: var(--succes);
+    font-weight: 500;
+}
+
+.indice-contact.indice-erreur {
+    background: var(--danger-clair);
+    color: var(--danger);
+}
+
+.option-qr {
+    margin-bottom: 12px;
+    border: 1px dashed var(--bordure);
+}
+
+/* ---------- Code QR ---------- */
+.onglets-qr {
+    margin-bottom: 16px;
+}
+
+.vue-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+}
+
+.cadre-qr {
+    width: 220px;
+    padding: 10px;
+    border-radius: var(--rayon);
+    background: #ffffff;
+    box-shadow: var(--ombre);
+}
+
+.cadre-qr svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.aide-qr {
+    max-width: 320px;
+    margin: 6px 0 10px;
+    color: var(--texte-doux);
+    font-size: 0.85rem;
+}
+
+.cadre-camera {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--rayon);
+    background: var(--sombre);
+}
+
+.cadre-camera video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.viseur {
+    position: absolute;
+    inset: 18%;
+    border: 3px solid #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 480px) {
+    .champ-groupe {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+/* ---------- Modifier un message ---------- */
+.bandeau-modification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 24px 10px;
+    padding: 8px 8px 8px 14px;
+    border-left: 4px solid var(--primaire);
+    border-radius: var(--rayon-petit);
+    background: var(--primaire-clair);
+}
+
+.bandeau-modification > i {
+    color: var(--primaire);
+}
+
+.bandeau-modification div {
+    flex: 1;
+    min-width: 0;
+}
+
+.bandeau-modification strong {
+    display: block;
+    color: var(--primaire);
+    font-size: 0.8rem;
+}
+
+.bandeau-modification p {
+    overflow: hidden;
+    color: var(--texte-doux);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.mention-modifie {
+    font-style: italic;
+}
+
+/* =========================================================
+   Photos de profil
+   ========================================================= */
+.avatar.avatar-photo {
+    background-color: var(--primaire-clair);
+    background-position: center;
+    background-size: cover;
+}
+
+.avatar-grand {
+    width: 88px;
+    height: 88px;
+    font-size: 2rem;
+}
+
+.photo-profil {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.photo-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.lien-danger {
+    color: var(--danger);
+    font-size: 0.85rem;
+}
+
+/* =========================================================
+   Répondre à un message
+   ========================================================= */
+.citation {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 4px 0 6px;
+    padding: 6px 10px;
+    border: none;
+    border-left: 3px solid var(--primaire);
+    border-radius: 8px;
+    background: rgba(79, 70, 229, 0.08);
+    color: var(--texte);
+    text-align: left;
+    cursor: pointer;
+}
+
+.citation strong {
+    color: var(--primaire);
+    font-size: 0.78rem;
+}
+
+.citation span {
+    overflow: hidden;
+    color: var(--texte-doux);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Message retrouvé après un clic sur une citation */
+.bulle-ligne.surligne .bulle {
+    animation: surligner 1.4s ease;
+}
+
+@keyframes surligner {
+    0%, 40% { box-shadow: 0 0 0 4px var(--primaire-clair); }
+    100% { box-shadow: none; }
+}
+
+/* =========================================================
+   Réactions
+   ========================================================= */
+.barre-reactions {
+    display: flex;
+    gap: 2px;
+    padding: 2px 2px 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--bordure);
+}
+
+.menu-flottant .barre-reactions button {
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    transition: transform 0.15s;
+}
+
+.menu-flottant .barre-reactions button:hover,
+.menu-flottant .barre-reactions button:focus {
+    transform: scale(1.2);
+}
+
+.bulle.avec-reactions {
+    margin-bottom: 16px;
+}
+
+.reactions-bulle {
+    position: absolute;
+    bottom: -14px;
+    left: 10px;
+    display: flex;
+    gap: 4px;
+}
+
+.envoye .reactions-bulle {
+    right: 10px;
+    left: auto;
+}
+
+.reaction {
+    padding: 1px 7px;
+    border: 1px solid var(--bordure);
+    border-radius: 999px;
+    background: var(--carte);
+    color: var(--texte);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.reaction.moi {
+    border-color: var(--primaire);
+    background: var(--primaire-clair);
+}
+
+/* Infos du groupe : bouton Renommer dans le champ */
+#form-renommer .lien-bouton {
+    flex-shrink: 0;
+    font-size: 0.85rem;
 }
