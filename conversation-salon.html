@@ -49,13 +49,56 @@
         <section class="liste-discussions">
             <header class="liste-entete">
                 <h1>Salons</h1>
-                <a href="salons.html" class="lien-discret">Tous les salons</a>
+                <div class="liste-actions">
+                    <button type="button" class="btn-icone" id="btn-selection-discussions"
+                            aria-label="Sélectionner des discussions" title="Sélectionner">
+                        <i class="fa-regular fa-square-check"></i>
+                    </button>
+                    <a href="salons.html" class="lien-discret">Tous les salons</a>
+                </div>
             </header>
             <div class="recherche">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="search" id="filtre-discussions" placeholder="Rechercher un salon..."
                        aria-label="Rechercher un salon">
             </div>
+            <!-- Listes (Toutes, Non lues, Favoris, listes perso) et tri -->
+            <div class="filtres-discussions">
+                <div class="filtres-listes" id="filtres-listes" role="tablist" aria-label="Listes"></div>
+                <label class="tri-discussions">
+                    <i class="fa-solid fa-arrow-down-wide-short"></i>
+                    <span class="sr-only">Trier par</span>
+                    <select id="tri-discussions">
+                        <option value="recent">Plus récentes</option>
+                        <option value="nonlues">Non lues d'abord</option>
+                        <option value="nom">Nom (A → Z)</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- Actions sur les discussions sélectionnées -->
+            <div class="barre-selection" id="barre-selection-discussions" hidden>
+                <button type="button" class="btn-icone" id="btn-fin-selection-discussions" aria-label="Annuler la sélection">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <strong id="nombre-discussions-choisies">0</strong>
+                <button type="button" class="btn-icone" data-action="lu" title="Marquer comme lu" aria-label="Marquer comme lu">
+                    <i class="fa-solid fa-check-double"></i>
+                </button>
+                <button type="button" class="btn-icone" data-action="favori" title="Favoris" aria-label="Ajouter ou retirer des favoris">
+                    <i class="fa-regular fa-star"></i>
+                </button>
+                <button type="button" class="btn-icone" data-action="liste" title="Ajouter à une liste" aria-label="Ajouter à une liste">
+                    <i class="fa-solid fa-list-ul"></i>
+                </button>
+                <button type="button" class="btn-icone" data-action="sourdine" title="Sourdine" aria-label="Mettre en sourdine ou réactiver">
+                    <i class="fa-solid fa-bell-slash"></i>
+                </button>
+                <button type="button" class="btn-icone btn-icone-danger" data-action="effacer" title="Effacer" aria-label="Effacer les discussions">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+
             <ul id="liste-discussions"></ul>
         </section>
 
@@ -88,6 +131,23 @@
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                     </button>
                 </header>
+
+                <!-- Actions sur les messages sélectionnés -->
+                <div class="barre-selection barre-selection-messages" id="barre-selection-messages" hidden>
+                    <button type="button" class="btn-icone" id="btn-fin-selection-messages" aria-label="Annuler la sélection">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <strong id="nombre-messages-choisis">0</strong>
+                    <button type="button" class="btn-icone" data-action="copier" title="Copier" aria-label="Copier les messages">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                    <button type="button" class="btn-icone" data-action="enregistrer" title="Enregistrer" aria-label="Enregistrer les messages">
+                        <i class="fa-regular fa-bookmark"></i>
+                    </button>
+                    <button type="button" class="btn-icone btn-icone-danger" data-action="supprimer" title="Supprimer" aria-label="Supprimer les messages">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
 
                 <div class="messages" id="messages" aria-live="polite"></div>
 
@@ -227,6 +287,37 @@
                 <i class="fa-solid fa-right-from-bracket"></i> Quitter le groupe
             </button>
         </div>
+    </dialog>
+
+    <!-- Créer une liste de discussions -->
+    <dialog class="fenetre" id="fenetre-liste">
+        <form id="form-liste" class="formulaire" method="dialog" novalidate>
+            <h2>Nouvelle liste</h2>
+            <p class="sous-titre">Regroupez des discussions : « Cours », « Famille », « Projet »...</p>
+            <div class="champ">
+                <label for="nom-liste">Nom de la liste</label>
+                <div class="champ-saisie">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <input type="text" id="nom-liste" maxlength="20" required>
+                </div>
+                <small class="erreur"></small>
+            </div>
+            <div class="fenetre-actions">
+                <button type="button" class="btn btn-secondaire" id="btn-annuler-liste">Annuler</button>
+                <button type="submit" class="btn btn-principal">Créer</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Ajouter les discussions sélectionnées à une liste -->
+    <dialog class="fenetre fenetre-liste" id="fenetre-choix-liste">
+        <div class="fenetre-entete">
+            <h2>Ajouter à une liste</h2>
+            <button type="button" class="btn-icone" data-fermer aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <ul class="liste-choix-contacts" id="choix-listes"></ul>
     </dialog>
 
     <dialog class="fenetre" id="fenetre-supprimer" aria-labelledby="supprimer-titre">

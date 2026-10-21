@@ -2706,3 +2706,203 @@ label.reglage {
     flex-shrink: 0;
     font-size: 0.85rem;
 }
+
+/* =========================================================
+   Listes, tri et sélection (messagerie)
+   ========================================================= */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.liste-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filtres-discussions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 16px 10px;
+}
+
+.filtres-listes {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+}
+
+.puce {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--bordure);
+    border-radius: 999px;
+    background: var(--carte);
+    color: var(--texte);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.puce.actif {
+    border-color: var(--primaire);
+    background: var(--primaire);
+    color: #ffffff;
+}
+
+.puce-ajouter {
+    color: var(--texte-doux);
+}
+
+.puce-supprimer {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    color: inherit;
+    font-size: 0.65rem;
+    cursor: pointer;
+}
+
+.tri-discussions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-end;
+    color: var(--texte-doux);
+    font-size: 0.8rem;
+}
+
+.tri-discussions select {
+    border: none;
+    background: transparent;
+    color: var(--texte);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Barre d'actions de la sélection */
+.barre-selection {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 8px 8px;
+    padding: 4px 6px;
+    border-radius: var(--rayon-petit);
+    background: var(--primaire-clair);
+}
+
+.barre-selection strong {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Boutons plus petits : la barre tient dans la colonne étroite de la liste */
+.barre-selection .btn-icone {
+    width: 34px;
+    height: 34px;
+}
+
+.barre-selection-messages {
+    margin: 0;
+    padding: 6px 24px;
+    border-radius: 0;
+    border-bottom: 1px solid var(--bordure);
+}
+
+.btn-icone-danger {
+    color: var(--danger);
+}
+
+/* Discussions : non lues et sélection */
+.liste-discussions a.non-lu .recente-nom,
+.liste-discussions a.non-lu .recente-apercu {
+    color: var(--texte);
+    font-weight: 600;
+}
+
+.liste-discussions .indicateurs .badge {
+    margin-left: 4px;
+}
+
+.liste-discussions a.selectionnable .avatar {
+    position: relative;
+}
+
+.coche {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--carte);
+    border-radius: 50%;
+    background: var(--bordure);
+    color: transparent;
+    font-size: 0.6rem;
+}
+
+.liste-discussions a.selectionne {
+    background: var(--primaire-clair);
+}
+
+.liste-discussions a.selectionne .coche {
+    background: var(--primaire);
+    color: #ffffff;
+}
+
+/* Messages : sélection */
+.bulle-ligne.selectionnable {
+    cursor: pointer;
+    border-radius: var(--rayon-petit);
+}
+
+.bulle-ligne.selectionnable .btn-options-message {
+    visibility: hidden;
+}
+
+.bulle-ligne.selectionne {
+    background: var(--primaire-clair);
+}
+
+.bulle-ligne.selectionnable::before {
+    content: "";
+    flex-shrink: 0;
+    align-self: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    border: 2px solid var(--bordure);
+    border-radius: 50%;
+}
+
+.bulle-ligne.selectionne::before {
+    border-color: var(--primaire);
+    background: var(--primaire) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8l3 3 5-6' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E") center / 12px no-repeat;
+}
+
+.bulle-ligne.envoye.selectionnable::before {
+    margin-right: auto;
+}

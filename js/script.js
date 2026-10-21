@@ -13,12 +13,8 @@ const STATUTS = {
     "ecrit": "En train d'écrire..."
 };
 
-/* ---------- Salons créés et messages envoyés ----------
-   Ils sont gardés dans le navigateur (localStorage) pour rester
-   affichés après un rechargement de la page. */
-const CLE_SALONS = "jokko-salons";
-const CLE_MESSAGES = "jokko-messages";
-
+/* ---------- Stockage du navigateur ----------
+   Seulement les préférences de cet appareil (les messages sont dans Supabase). */
 function lireStockage(cle, valeurParDefaut) {
     try {
         return JSON.parse(localStorage.getItem(cle)) || valeurParDefaut;
@@ -74,9 +70,6 @@ function afficherToast(texte) {
         toast.hidden = true;
     }, 2500);
 }
-
-// Messages envoyés et réponses reçues. Format : { "contact:fatou": [...], "salon:general": [...] }
-const messagesAjoutes = lireStockage(CLE_MESSAGES, {});
 
 /* ---------- Modifications et réglages ----------
    - Modifications des messages d'origine (masqué, supprimé, ouvert...) :
@@ -148,40 +141,22 @@ function estLisible(message) {
     return !message.systeme && !message.supprime && !message.masque && !message.vueUnique;
 }
 
-function preparerDiscussions(type, liste) {
+// Applique les changements faits sur cet appareil (masqué, effacé pour moi, éphémère...)
+function preparerDiscussions(liste) {
     Object.keys(liste).forEach(function (cle) {
         const discussion = liste[cle];
-        const cleStockage = type + ":" + cle;
-        const ajoutes = messagesAjoutes[cleStockage] || [];
-
-        // Chaque message reçoit un identifiant qui ne change plus
-        discussion.messages.forEach(function (message, position) {
-            message.id = message.id || cleStockage + ":" + position;
-        });
-        ajoutes.forEach(function (message, position) {
-            message.id = message.id || cleStockage + ":a" + position;
-        });
-
-        discussion.messages = discussion.messages.concat(ajoutes);
         discussion.messages.forEach(function (message) {
             Object.assign(message, modificationsMessages[message.id]);
         });
-
         // On retire définitivement les messages effacés
         discussion.messages = discussion.messages.filter(function (message) {
             return !estEfface(message);
         });
-        if (messagesAjoutes[cleStockage]) {
-            messagesAjoutes[cleStockage] = ajoutes.filter(function (message) {
-                return !estEfface(message);
-            });
-        }
     });
 }
 
-preparerDiscussions("contact", CONTACTS);
-preparerDiscussions("salon", SALONS);
-ecrireStockage(CLE_MESSAGES, messagesAjoutes);
+preparerDiscussions(CONTACTS);
+preparerDiscussions(SALONS);
 
 /* ---------- Onglets Connexion / Inscription (index.html) ---------- */
 const formConnexion = document.getElementById("form-connexion");
@@ -831,22 +806,384 @@ if (typeMessagerie) {
         return typeMessagerie === "salon" ? dernier.auteur + " : " + contenu : contenu;
     }
 
+    /* ---------- Non lus ----------
+       On retient quand chaque discussion a été vue pour la dernière fois (sur cet appareil). */
+    const CLE_VUS = "jokko-vus";
+    const premiereFois = lireStockage(CLE_VUS, null) === null;
+    const vus = lireStockage(CLE_VUS, {});
+
+    function cleDe(cle) {
+        return typeMessagerie + ":" + cle;
+    }
+
+    // Première utilisation : tout est considéré comme déjà lu
+    if (premiereFois) {
+        Object.keys(donnees).forEach(function (cle) {
+            vus[cleDe(cle)] = new Date().toISOString();
+        });
+        ecrireStockage(CLE_VUS, vus);
+    }
+
+    function nombreNonLus(cle) {
+        const depuis = vus[cleDe(cle)] || "";
+        return donnees[cle].messages.filter(function (message) {
+            return message.auteur !== "Moi" && !message.systeme && message.date && message.date > depuis;
+        }).length;
+    }
+
+    function marquerVu(cles) {
+        const maintenant = new Date().toISOString();
+        cles.forEach(function (cle) {
+            vus[cleDe(cle)] = maintenant;
+        });
+        ecrireStockage(CLE_VUS, vus);
+        afficherListe();
+    }
+
+    /* ---------- Listes : Toutes, Non lues, Favoris + listes perso ----------
+       Gardées sur cet appareil. Une liste contient des clés « contact:id » ou « salon:id ». */
+    const CLE_LISTES = "jokko-listes";
+    const listes = lireStockage(CLE_LISTES, { favoris: [], perso: [] });
+    let listeActive = "toutes";
+
+    function enregistrerListes() {
+        ecrireStockage(CLE_LISTES, listes);
+    }
+
+    function membresDe(liste) {
+        if (liste === "favoris") {
+            return listes.favoris;
+        }
+        const perso = listes.perso.find(function (element) {
+            return element.id === liste;
+        });
+        return perso ? perso.cles : [];
+    }
+
+    function afficherFiltres() {
+        const zone = document.getElementById("filtres-listes");
+        zone.innerHTML = "";
+        const choix = [["toutes", "Toutes"], ["nonlues", "Non lues"], ["favoris", "★ Favoris"]]
+            .concat(listes.perso.map(function (liste) {
+                return [liste.id, liste.nom];
+            }));
+
+        choix.forEach(function ([id, nom]) {
+            const puce = document.createElement("button");
+            puce.type = "button";
+            puce.className = id === listeActive ? "puce actif" : "puce";
+            puce.setAttribute("role", "tab");
+            puce.setAttribute("aria-selected", id === listeActive);
+            puce.textContent = nom;
+            puce.addEventListener("click", function () {
+                listeActive = id;
+                afficherFiltres();
+                afficherListe();
+            });
+            zone.appendChild(puce);
+
+            // Liste perso active : petit × pour la supprimer
+            const estPerso = listes.perso.some(function (liste) {
+                return liste.id === id;
+            });
+            if (id === listeActive && estPerso) {
+                const supprimer = document.createElement("button");
+                supprimer.type = "button";
+                supprimer.className = "puce-supprimer";
+                supprimer.setAttribute("aria-label", "Supprimer la liste " + nom);
+                supprimer.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                supprimer.addEventListener("click", function () {
+                    if (!window.confirm("Supprimer la liste « " + nom + " » ? Les discussions ne sont pas effacées.")) {
+                        return;
+                    }
+                    listes.perso = listes.perso.filter(function (liste) {
+                        return liste.id !== id;
+                    });
+                    enregistrerListes();
+                    listeActive = "toutes";
+                    afficherFiltres();
+                    afficherListe();
+                });
+                puce.appendChild(supprimer);
+            }
+        });
+
+        const ajouter = document.createElement("button");
+        ajouter.type = "button";
+        ajouter.className = "puce puce-ajouter";
+        ajouter.setAttribute("aria-label", "Nouvelle liste");
+        ajouter.innerHTML = '<i class="fa-solid fa-plus"></i>';
+        ajouter.addEventListener("click", function () {
+            ouvrirNouvelleListe(null);
+        });
+        zone.appendChild(ajouter);
+    }
+
+    // Nouvelle liste ; clesAAjouter : discussions sélectionnées à y mettre directement
+    const fenetreListe = document.getElementById("fenetre-liste");
+    const champNomListe = document.getElementById("nom-liste");
+    let clesPourNouvelleListe = null;
+
+    function ouvrirNouvelleListe(clesAAjouter) {
+        clesPourNouvelleListe = clesAAjouter;
+        document.getElementById("form-liste").reset();
+        afficherErreur(champNomListe, "");
+        fenetreListe.showModal();
+        champNomListe.focus();
+    }
+
+    document.getElementById("btn-annuler-liste").addEventListener("click", function () {
+        fenetreListe.close();
+    });
+
+    document.getElementById("form-liste").addEventListener("submit", function (evenement) {
+        evenement.preventDefault();
+        const nom = champNomListe.value.trim();
+        if (nom === "") {
+            afficherErreur(champNomListe, "Donnez un nom à la liste.");
+            return;
+        }
+        const existe = listes.perso.some(function (liste) {
+            return simplifier(liste.nom) === simplifier(nom);
+        });
+        if (existe) {
+            afficherErreur(champNomListe, "Cette liste existe déjà.");
+            return;
+        }
+        const liste = { id: "l" + Date.now().toString(36), nom: nom, cles: clesPourNouvelleListe || [] };
+        listes.perso.push(liste);
+        enregistrerListes();
+        fenetreListe.close();
+        if (clesPourNouvelleListe) {
+            terminerSelection();
+            afficherToast("Ajouté à la liste « " + nom + " ».");
+        }
+        listeActive = liste.id;
+        afficherFiltres();
+        afficherListe();
+    });
+
+    /* ---------- Tri ---------- */
+    const selectTri = document.getElementById("tri-discussions");
+    const CLE_TRI = "jokko-tri";
+    selectTri.value = lireStockage(CLE_TRI, "recent");
+
+    selectTri.addEventListener("change", function () {
+        ecrireStockage(CLE_TRI, selectTri.value);
+        afficherListe();
+    });
+
+    function dateDernier(cle) {
+        const messages = donnees[cle].messages;
+        const dernier = messages[messages.length - 1];
+        return dernier && dernier.date ? dernier.date : "";
+    }
+
+    function trier(cles) {
+        return cles.sort(function (a, b) {
+            if (selectTri.value === "nom") {
+                return donnees[a].nom.localeCompare(donnees[b].nom, "fr");
+            }
+            if (selectTri.value === "nonlues") {
+                const ecart = Math.sign(nombreNonLus(b)) - Math.sign(nombreNonLus(a));
+                if (ecart !== 0) {
+                    return ecart;
+                }
+            }
+            return dateDernier(b).localeCompare(dateDernier(a));
+        });
+    }
+
+    /* ---------- Sélection de discussions ---------- */
+    const barreDiscussions = document.getElementById("barre-selection-discussions");
+    let selection = null; // null = pas en mode sélection, sinon un Set de clés
+
+    function commencerSelection() {
+        selection = new Set();
+        barreDiscussions.hidden = false;
+        afficherListe();
+    }
+
+    function terminerSelection() {
+        selection = null;
+        barreDiscussions.hidden = true;
+        afficherListe();
+    }
+
+    function basculerSelection(cle) {
+        if (selection.has(cle)) {
+            selection.delete(cle);
+        } else {
+            selection.add(cle);
+        }
+        afficherListe();
+    }
+
+    document.getElementById("btn-selection-discussions").addEventListener("click", function () {
+        if (selection) {
+            terminerSelection();
+        } else {
+            commencerSelection();
+        }
+    });
+    document.getElementById("btn-fin-selection-discussions").addEventListener("click", terminerSelection);
+
+    function ajouterALaListe(liste, cles) {
+        const membres = membresDe(liste);
+        cles.forEach(function (cle) {
+            if (!membres.includes(cle)) {
+                membres.push(cle);
+            }
+        });
+        enregistrerListes();
+    }
+
+    const actionsDiscussions = {
+        lu: function (cles) {
+            marquerVu(cles);
+            afficherToast(cles.length > 1 ? "Discussions marquées comme lues." : "Discussion marquée comme lue.");
+        },
+        favori: function (cles) {
+            const tousFavoris = cles.every(function (cle) {
+                return listes.favoris.includes(cleDe(cle));
+            });
+            if (tousFavoris) {
+                listes.favoris = listes.favoris.filter(function (cle) {
+                    return !cles.map(cleDe).includes(cle);
+                });
+            } else {
+                ajouterALaListe("favoris", cles.map(cleDe));
+            }
+            enregistrerListes();
+            afficherToast(tousFavoris ? "Retiré des favoris." : "Ajouté aux favoris ★");
+        },
+        liste: function (cles) {
+            const fenetre = document.getElementById("fenetre-choix-liste");
+            const zone = document.getElementById("choix-listes");
+            zone.innerHTML = "";
+            listes.perso.forEach(function (liste) {
+                const ligne = document.createElement("li");
+                const bouton = document.createElement("button");
+                bouton.type = "button";
+                bouton.className = "option-nouvelle";
+                bouton.innerHTML = '<span class="avatar avatar-action"><i class="fa-solid fa-list-ul"></i></span>';
+                bouton.append(liste.nom + " (" + liste.cles.length + ")");
+                bouton.addEventListener("click", function () {
+                    ajouterALaListe(liste.id, cles.map(cleDe));
+                    fenetre.close();
+                    terminerSelection();
+                    afficherToast("Ajouté à la liste « " + liste.nom + " ».");
+                });
+                ligne.appendChild(bouton);
+                zone.appendChild(ligne);
+            });
+            const ligne = document.createElement("li");
+            const nouvelle = document.createElement("button");
+            nouvelle.type = "button";
+            nouvelle.className = "option-nouvelle";
+            nouvelle.innerHTML = '<span class="avatar avatar-action"><i class="fa-solid fa-plus"></i></span> Nouvelle liste';
+            nouvelle.addEventListener("click", function () {
+                fenetre.close();
+                ouvrirNouvelleListe(cles.map(cleDe));
+            });
+            ligne.appendChild(nouvelle);
+            zone.appendChild(ligne);
+            fenetre.showModal();
+            return true; // la sélection reste active tant que la fenêtre est ouverte
+        },
+        sourdine: function (cles) {
+            const toutesMuettes = cles.every(function (cle) {
+                return reglageDe(cleDe(cle)).sourdine;
+            });
+            cles.forEach(function (cle) {
+                reglagesDiscussions[cleDe(cle)] = Object.assign({}, reglageDe(cleDe(cle)), { sourdine: !toutesMuettes });
+            });
+            ecrireStockage(CLE_REGLAGES, reglagesDiscussions);
+            afficherToast(toutesMuettes ? "Notifications réactivées." : "Discussions en sourdine.");
+            if (cles.includes(cleOuverte)) {
+                window.location.reload();
+            }
+        },
+        effacer: function (cles) {
+            const texte = cles.length > 1 ? "ces " + cles.length + " discussions" : "cette discussion";
+            if (!window.confirm("Effacer " + texte + " de cet appareil ? Les messages ne sont pas supprimés chez les autres.")) {
+                return true;
+            }
+            cles.forEach(function (cle) {
+                donnees[cle].messages.forEach(function (message) {
+                    modificationsMessages[message.id] = { supprime: "moi" };
+                });
+                donnees[cle].messages = [];
+            });
+            ecrireStockage(CLE_MODIFICATIONS, modificationsMessages);
+            afficherToast(cles.length > 1 ? "Discussions effacées." : "Discussion effacée.");
+            if (cles.includes(cleOuverte)) {
+                window.location.reload();
+            }
+        }
+    };
+
+    barreDiscussions.querySelectorAll("[data-action]").forEach(function (bouton) {
+        bouton.addEventListener("click", function () {
+            const cles = Array.from(selection || []);
+            if (cles.length === 0) {
+                afficherToast("Sélectionnez d'abord une ou plusieurs discussions.");
+                return;
+            }
+            const garder = actionsDiscussions[bouton.dataset.action](cles);
+            if (!garder) {
+                terminerSelection();
+            }
+        });
+    });
+
+    document.getElementById("fenetre-choix-liste").querySelector("[data-fermer]").addEventListener("click", function () {
+        document.getElementById("fenetre-choix-liste").close();
+    });
+
+    /* ---------- Liste de gauche ---------- */
     function afficherListe() {
         const saisie = simplifier(filtreDiscussions.value.trim());
         listeDiscussions.innerHTML = "";
 
-        Object.keys(donnees).forEach(function (cle) {
-            const discussion = donnees[cle];
-            if (!simplifier(discussion.nom).includes(saisie)) {
-                return;
+        let cles = Object.keys(donnees).filter(function (cle) {
+            if (!simplifier(donnees[cle].nom).includes(saisie)) {
+                return false;
             }
-            const reglage = reglageDe(typeMessagerie + ":" + cle);
+            if (listeActive === "nonlues") {
+                return nombreNonLus(cle) > 0;
+            }
+            if (listeActive !== "toutes") {
+                return membresDe(listeActive).includes(cleDe(cle));
+            }
+            return true;
+        });
+        cles = trier(cles);
+
+        cles.forEach(function (cle) {
+            const discussion = donnees[cle];
+            const reglage = reglageDe(cleDe(cle));
+            const nonLus = cle === cleOuverte ? 0 : nombreNonLus(cle);
 
             const lien = document.createElement("a");
             lien.href = pageMessagerie + "?" + typeMessagerie + "=" + cle;
             if (cle === cleOuverte) {
                 lien.className = "actif";
                 lien.setAttribute("aria-current", "page");
+            }
+            if (nonLus > 0) {
+                lien.classList.add("non-lu");
+            }
+
+            // Mode sélection : un clic coche/décoche au lieu d'ouvrir
+            if (selection) {
+                lien.classList.add("selectionnable");
+                lien.classList.toggle("selectionne", selection.has(cle));
+                lien.setAttribute("aria-pressed", selection.has(cle));
+                lien.addEventListener("click", function (evenement) {
+                    evenement.preventDefault();
+                    basculerSelection(cle);
+                });
             }
 
             const texte = document.createElement("div");
@@ -869,29 +1206,55 @@ if (typeMessagerie) {
             heure.textContent = dernier ? dernier.heure : "";
             const icones = document.createElement("span");
             icones.className = "indicateurs";
+            if (listes.favoris.includes(cleDe(cle))) {
+                icones.appendChild(creerIndicateur("fa-star", "Favori"));
+            }
             if (reglage.ephemere) {
                 icones.appendChild(creerIndicateur("fa-stopwatch", "Messages éphémères"));
             }
             if (reglage.sourdine) {
                 icones.appendChild(creerIndicateur("fa-bell-slash", "En sourdine"));
             }
+            if (nonLus > 0) {
+                const badge = document.createElement("span");
+                badge.className = "badge";
+                badge.textContent = nonLus > 99 ? "99+" : nonLus;
+                badge.setAttribute("aria-label", nonLus + " non lu" + (nonLus > 1 ? "s" : ""));
+                icones.appendChild(badge);
+            }
             infos.append(heure, icones);
 
-            lien.append(creerAvatar(typeMessagerie, discussion), texte, infos);
+            const avatar = creerAvatar(typeMessagerie, discussion);
+            if (selection) {
+                const coche = document.createElement("span");
+                coche.className = "coche";
+                coche.innerHTML = '<i class="fa-solid fa-check"></i>';
+                avatar.appendChild(coche);
+            }
+
+            lien.append(avatar, texte, infos);
             const ligne = document.createElement("li");
             ligne.appendChild(lien);
             listeDiscussions.appendChild(ligne);
         });
 
+        if (selection) {
+            document.getElementById("nombre-discussions-choisies").textContent =
+                selection.size + " sélectionnée" + (selection.size > 1 ? "s" : "");
+        }
+
         if (listeDiscussions.children.length === 0) {
             const vide = document.createElement("li");
             vide.className = "aucun-resultat";
-            vide.textContent = "Aucun résultat.";
+            vide.textContent = listeActive === "nonlues" ? "Aucune discussion non lue."
+                : listeActive === "toutes" ? "Aucun résultat."
+                : "Cette liste est vide. Sélectionnez des discussions pour en ajouter.";
             listeDiscussions.appendChild(vide);
         }
     }
 
     filtreDiscussions.addEventListener("input", afficherListe);
+    afficherFiltres();
     afficherListe();
 
     // Nouveau message ou changement de statut : la liste de gauche suit
@@ -1089,16 +1452,28 @@ if (typeMessagerie) {
 
                 const resume = document.createElement("p");
                 resume.className = "bulle-resume";
-                resume.hidden = true;
                 resume.textContent = resumerTexte(message.texte, 2);
 
+                // Le résumé reste ouvert même quand les messages sont redessinés (temps réel)
+                function montrerResume(ouvert) {
+                    resume.hidden = !ouvert;
+                    boutonResume.lastChild.textContent = ouvert ? " Masquer le résumé" : " Résumer ce message";
+                }
+                montrerResume(resumesOuverts.has(message.id));
+
                 boutonResume.addEventListener("click", function () {
-                    resume.hidden = !resume.hidden;
-                    boutonResume.lastChild.textContent = resume.hidden ? " Résumer ce message" : " Masquer le résumé";
+                    if (resumesOuverts.has(message.id)) {
+                        resumesOuverts.delete(message.id);
+                    } else {
+                        resumesOuverts.add(message.id);
+                    }
+                    montrerResume(resumesOuverts.has(message.id));
                 });
                 bulle.append(boutonResume, resume);
             }
         }
+
+        const resumesOuverts = new Set();
 
         // Message à vue unique : on ne montre jamais le contenu dans la bulle
         function remplirVueUnique(bulle, message, estMoi) {
@@ -1141,6 +1516,18 @@ if (typeMessagerie) {
             ligne.className = estMoi ? "bulle-ligne envoye" : "bulle-ligne recu";
             if (message.sbId) {
                 ligne.dataset.sbId = message.sbId;
+            }
+
+            // Mode sélection : un clic sur la ligne coche/décoche le message
+            if (selectionMessages) {
+                ligne.classList.add("selectionnable");
+                ligne.classList.toggle("selectionne", selectionMessages.has(message));
+                ligne.setAttribute("aria-pressed", selectionMessages.has(message));
+                ligne.addEventListener("click", function (evenement) {
+                    evenement.preventDefault();
+                    evenement.stopPropagation();
+                    basculerMessage(message);
+                }, true);
             }
 
             // Dans un salon, on montre qui parle (avatar + nom)
@@ -1263,6 +1650,127 @@ if (typeMessagerie) {
             ligne.appendChild(bulle);
             return ligne;
         }
+
+        /* ---------- Sélection de plusieurs messages ---------- */
+        const barreMessages = document.getElementById("barre-selection-messages");
+        let selectionMessages = null; // null = pas de sélection, sinon un Set de messages
+
+        function commencerSelectionMessages(premier) {
+            selectionMessages = new Set(premier ? [premier] : []);
+            barreMessages.hidden = false;
+            afficherSelectionMessages();
+        }
+
+        function terminerSelectionMessages() {
+            selectionMessages = null;
+            barreMessages.hidden = true;
+            afficherMessages(false);
+        }
+
+        function basculerMessage(message) {
+            if (selectionMessages.has(message)) {
+                selectionMessages.delete(message);
+            } else {
+                selectionMessages.add(message);
+            }
+            afficherSelectionMessages();
+        }
+
+        function afficherSelectionMessages() {
+            const nombre = selectionMessages.size;
+            document.getElementById("nombre-messages-choisis").textContent =
+                nombre + " message" + (nombre > 1 ? "s" : "") + " sélectionné" + (nombre > 1 ? "s" : "");
+            // Garder la position de lecture pendant la sélection
+            const position = zoneMessages.scrollTop;
+            afficherMessages(false);
+            zoneMessages.scrollTop = position;
+        }
+
+        // Messages choisis, dans l'ordre de la discussion
+        function messagesChoisis() {
+            return discussionOuverte.messages.filter(function (message) {
+                return selectionMessages.has(message);
+            });
+        }
+
+        document.getElementById("btn-fin-selection-messages").addEventListener("click", terminerSelectionMessages);
+
+        const actionsMessages = {
+            copier: function (choisis) {
+                const lignes = choisis.filter(function (message) {
+                    return message.texte && !message.vueUnique && message.supprime !== "tous";
+                }).map(function (message) {
+                    return "[" + message.heure + "] " + (message.auteur === "Moi" ? "Moi" : message.auteur) + " : " + message.texte;
+                });
+                if (lignes.length === 0 || !navigator.clipboard) {
+                    afficherToast("Aucun texte à copier.");
+                    return;
+                }
+                navigator.clipboard.writeText(lignes.join("\n")).then(function () {
+                    afficherToast(lignes.length > 1 ? lignes.length + " messages copiés." : "Message copié.");
+                });
+            },
+            enregistrer: function (choisis) {
+                let nombre = 0;
+                choisis.forEach(function (message) {
+                    if (message.sbId && message.supprime !== "tous" && !estEnregistre(message)) {
+                        basculerEnregistrement(message, discussionOuverte.nom, pageMessagerie + "?" + typeMessagerie + "=" + cleOuverte);
+                        nombre++;
+                    }
+                });
+                afficherToast(nombre ? nombre + " message(s) enregistré(s) 🔖" : "Déjà enregistrés.");
+            },
+            supprimer: function (choisis) {
+                // « Pour tout le monde » seulement si ce sont tous mes messages
+                const tousAMoi = choisis.every(function (message) {
+                    return message.auteur === "Moi" && message.sbId && message.supprime !== "tous";
+                });
+                const nombre = choisis.length > 1 ? choisis.length + " messages" : "le message";
+                demanderSuppression({
+                    titre: "Supprimer " + nombre + " ?",
+                    texte: tousAMoi
+                        ? "« Pour tout le monde » les remplace par « Ce message a été supprimé » chez tous les participants. « Pour moi » les efface seulement de votre appareil."
+                        : "Ils seront effacés de votre appareil, définitivement. Personne n'est prévenu.",
+                    pourTous: tousAMoi
+                }).then(function (choix) {
+                    if (choix === "tous") {
+                        choisis.forEach(function (message) {
+                            modifierMessage(message, Object.assign({ supprime: "tous", masque: false, vueUnique: false }, CONTENU_VIDE));
+                            supprimerPourTous(message.sbId).catch(function () {
+                                afficherToast("Certains messages n'ont pas pu être supprimés pour les autres.");
+                            });
+                        });
+                    } else if (choix === "moi") {
+                        choisis.forEach(effacerPourMoi);
+                    } else {
+                        return;
+                    }
+                    terminerSelectionMessages();
+                    afficherListe();
+                });
+                return true; // la fenêtre de confirmation décide
+            }
+        };
+
+        barreMessages.querySelectorAll("[data-action]").forEach(function (bouton) {
+            bouton.addEventListener("click", function () {
+                const choisis = messagesChoisis();
+                if (choisis.length === 0) {
+                    afficherToast("Touchez des messages pour les sélectionner.");
+                    return;
+                }
+                const garder = actionsMessages[bouton.dataset.action](choisis);
+                if (!garder) {
+                    terminerSelectionMessages();
+                }
+            });
+        });
+
+        document.addEventListener("keydown", function (evenement) {
+            if (evenement.key === "Escape" && selectionMessages && !document.querySelector("dialog[open]")) {
+                terminerSelectionMessages();
+            }
+        });
 
         /* ---------- Répondre à un message ---------- */
         function apercuDe(message) {
@@ -1639,6 +2147,10 @@ if (typeMessagerie) {
                     afficherMessages(false);
                 } });
             }
+
+            actions.push({ icone: "fa-square-check", texte: "Sélectionner", faire: function () {
+                commencerSelectionMessages(message);
+            } });
 
             actions.push({ icone: "fa-trash-can", texte: "Supprimer...", danger: true, faire: function () {
                 supprimerMessage(message);
@@ -2216,6 +2728,20 @@ if (typeMessagerie) {
         signalerLecture();
         document.addEventListener("visibilitychange", signalerLecture);
 
+        // Discussion ouverte et visible : plus rien de « non lu »
+        function vuMaintenant() {
+            if (!document.hidden) {
+                marquerVu([cleOuverte]);
+            }
+        }
+        vuMaintenant();
+        document.addEventListener("visibilitychange", vuMaintenant);
+        ecouteurs.message.push(function (type, cle) {
+            if (type === typeMessagerie && cle === cleOuverte) {
+                vuMaintenant();
+            }
+        });
+
         // Quelqu'un se connecte, écrit, ou supprime un message
         ecouteurs.statut.push(function () {
             afficherStatut();
@@ -2590,23 +3116,30 @@ if (formParametres) {
 
     afficherThemeChoisi();
 
-    /* ---------- Stockage utilisé ---------- */
-    const LIMITE_STOCKAGE = 5 * 1024 * 1024; // environ 5 Mo
+    /* ---------- Données de cet appareil ---------- */
+    const LIMITE_STOCKAGE = 5 * 1024 * 1024; // environ 5 Mo par site
 
-    // Taille approximative : chaque caractère compte pour 2 octets
-    function tailleStockage() {
-        let total = 0;
+    // Préférences gardées dans ce navigateur (la session Supabase n'en fait pas partie)
+    function clesJokko() {
+        const cles = [];
         try {
             for (let position = 0; position < localStorage.length; position++) {
                 const cle = localStorage.key(position);
-                if (cle.startsWith("jokko-")) {
-                    total += (cle.length + localStorage.getItem(cle).length) * 2;
+                if (cle.startsWith("jokko-") && cle !== CLE_UTILISATEUR) {
+                    cles.push(cle);
                 }
             }
         } catch (erreur) {
-            return 0;
+            // Stockage indisponible
         }
-        return total;
+        return cles;
+    }
+
+    // Taille approximative : chaque caractère compte pour 2 octets
+    function tailleStockage() {
+        return clesJokko().reduce(function (total, cle) {
+            return total + (cle.length + (localStorage.getItem(cle) || "").length) * 2;
+        }, 0);
     }
 
     function formaterTaille(octets) {
@@ -2620,28 +3153,16 @@ if (formParametres) {
         const taille = tailleStockage();
         const pourcentage = Math.min(100, Math.round((taille / LIMITE_STOCKAGE) * 100));
 
-        let messages = 0;
-        let images = 0;
-        let vocaux = 0;
-        Object.keys(messagesAjoutes).forEach(function (cle) {
-            messagesAjoutes[cle].forEach(function (message) {
-                if (message.systeme) {
-                    return;
-                }
-                messages++;
-                if (message.image) {
-                    images++;
-                }
-                if (message.audio) {
-                    vocaux++;
-                }
-            });
-        });
+        const enregistres = lireEnregistres().length;
+        const listes = lireStockage("jokko-listes", { perso: [] }).perso.length;
+        const masques = Object.keys(modificationsMessages).filter(function (id) {
+            return modificationsMessages[id].masque || modificationsMessages[id].supprime === "moi";
+        }).length;
 
         document.getElementById("stockage-utilise").textContent =
-            formaterTaille(taille) + " utilisés sur environ 5 Mo (" + pourcentage + " %)";
+            formaterTaille(taille) + " utilisés sur cet appareil (" + pourcentage + " % de la place disponible)";
         document.getElementById("stockage-detail").textContent =
-            messages + " message(s) ajouté(s), dont " + images + " image(s) et " + vocaux + " vocal(aux)";
+            enregistres + " message(s) enregistré(s) · " + listes + " liste(s) · " + masques + " message(s) masqué(s) ou effacé(s) pour moi";
 
         const jauge = document.getElementById("jauge-stockage");
         jauge.setAttribute("aria-valuenow", pourcentage);
@@ -2690,25 +3211,25 @@ if (formParametres) {
 
     document.getElementById("btn-effacer-messages").addEventListener("click", function () {
         demanderConfirmation(
-            "Effacer vos messages ?",
-            "Tous les messages que vous avez envoyés ou reçus ici (avec les images et les vocaux) seront effacés définitivement. Les discussions de démonstration reviennent à leur état de départ.",
+            "Réafficher les messages ?",
+            "Les messages que vous avez masqués ou effacés « pour moi » sur cet appareil réapparaîtront. Les messages supprimés pour tout le monde restent supprimés.",
             function () {
-                oublier([CLE_MESSAGES, CLE_MODIFICATIONS]);
-                Object.keys(messagesAjoutes).forEach(function (cle) {
-                    delete messagesAjoutes[cle];
+                oublier([CLE_MODIFICATIONS]);
+                Object.keys(modificationsMessages).forEach(function (id) {
+                    delete modificationsMessages[id];
                 });
                 afficherStockage();
-                afficherToast("Messages effacés.");
+                afficherToast("Les messages sont de nouveau visibles.");
             }
         );
     });
 
     document.getElementById("btn-reinitialiser").addEventListener("click", function () {
         demanderConfirmation(
-            "Réinitialiser l'application ?",
-            "Messages, salons créés, réglages des discussions et paramètres seront effacés. Votre session reste ouverte.",
+            "Réinitialiser cet appareil ?",
+            "Paramètres, sourdines, messages éphémères, listes, favoris et messages enregistrés de ce navigateur seront effacés. Vos messages en ligne et votre compte ne changent pas.",
             function () {
-                oublier([CLE_MESSAGES, CLE_MODIFICATIONS, CLE_REGLAGES, CLE_SALONS, CLE_PARAMETRES]);
+                oublier(clesJokko());
                 window.location.reload();
             }
         );

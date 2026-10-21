@@ -137,9 +137,9 @@
             </section>
         </form>
 
-        <!-- Stockage -->
+        <!-- Données de cet appareil -->
         <section class="carte-reglages" aria-labelledby="titre-stockage">
-            <h2 id="titre-stockage"><i class="fa-solid fa-database"></i> Stockage</h2>
+            <h2 id="titre-stockage"><i class="fa-solid fa-database"></i> Données de cet appareil</h2>
 
             <div class="reglage reglage-colonne">
                 <span class="reglage-texte">
@@ -151,17 +151,18 @@
                     <span id="jauge-remplie"></span>
                 </div>
                 <small class="reglage-note">
-                    Sans serveur, tout est gardé dans ce navigateur, qui limite la place à environ 5 Mo.
-                    Les images et les vocaux en prennent le plus.
+                    Vos messages, images et vocaux sont enregistrés en ligne : vous les retrouvez sur tous vos appareils.
+                    Ce navigateur garde seulement vos préférences : messages masqués ou effacés pour vous, sourdine,
+                    messages éphémères, listes, favoris et messages enregistrés.
                 </small>
             </div>
 
             <div class="reglage-actions">
-                <button type="button" class="btn btn-danger-clair btn-auto" id="btn-effacer-messages">
-                    <i class="fa-solid fa-trash-can"></i> Effacer mes messages, images et vocaux
+                <button type="button" class="btn btn-secondaire btn-auto" id="btn-effacer-messages">
+                    <i class="fa-solid fa-eye"></i> Réafficher les messages masqués ou effacés pour moi
                 </button>
-                <button type="button" class="btn btn-secondaire btn-auto" id="btn-reinitialiser">
-                    <i class="fa-solid fa-rotate-left"></i> Réinitialiser l'application
+                <button type="button" class="btn btn-danger-clair btn-auto" id="btn-reinitialiser">
+                    <i class="fa-solid fa-rotate-left"></i> Réinitialiser cet appareil
                 </button>
             </div>
         </section>
