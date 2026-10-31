@@ -99,26 +99,26 @@ function estEnregistre(message) {
 }
 
 function basculerEnregistrement(message, nomDiscussion, lien) {
-    const enregistres = lireEnregistres();
-    const position = enregistres.findIndex(function (enregistre) {
+    const enregistres = lireEnregistres();   // liste gardée dans le navigateur
+    const position = enregistres.findIndex(function (enregistre) {   // déjà enregistré ? (-1 si non)
         return enregistre.id === message.id;
     });
 
-    if (position > -1) {
-        enregistres.splice(position, 1);
+    if (position > -1) {   // oui : on le retire
+        enregistres.splice(position, 1);   // supprime 1 élément à cette position
         afficherToast("Message retiré des enregistrés.");
     } else {
-        enregistres.push({
+        enregistres.push({   // non : on garde une copie du message
             id: message.id,
             auteur: message.auteur,
             texte: message.texte || (message.audio ? "🎤 Message vocal" : "📷 Photo"),
             heure: message.heure,
             discussionNom: nomDiscussion,
-            lien: lien
+            lien: lien   // pour rouvrir la discussion depuis la page « Enregistrés »
         });
         afficherToast("Message enregistré 🔖");
     }
-    ecrireStockage(CLE_ENREGISTRES, enregistres);
+    ecrireStockage(CLE_ENREGISTRES, enregistres);   // on sauvegarde la liste
 }
 
 function nouvelIdentifiant() {
@@ -233,19 +233,19 @@ const ERREURS_COMPTE = {
 
 // Crée le compte ou ouvre la session avec Supabase
 async function envoyerFormulaireCompte(formulaire) {
-    const email = formulaire.querySelector("input[type=email]").value.trim();
-    const motDePasse = formulaire.querySelector("input[type=password]").value;
+    const email = formulaire.querySelector("input[type=email]").value.trim();   // email tapé (sans espaces autour)
+    const motDePasse = formulaire.querySelector("input[type=password]").value;   // mot de passe tapé
 
-    if (formulaire.id === "form-inscription") {
-        const session = await inscrire(email, motDePasse, {
+    if (formulaire.id === "form-inscription") {   // onglet « S'inscrire »
+        const session = await inscrire(email, motDePasse, {   // crée le compte dans Supabase (donnees.js)
             nom: document.getElementById("nom").value.trim(),
             niveau: document.getElementById("niveau").value,
             specialite: document.getElementById("specialite").value.trim(),
             departement: document.getElementById("departement").value.trim()
         });
-        return session !== null;
+        return session !== null;   // true = connecté tout de suite
     }
-    await connecter(email, motDePasse);
+    await connecter(email, motDePasse);   // onglet « Se connecter » : vérifie email + mot de passe
     return true;
 }
 
@@ -299,18 +299,18 @@ document.querySelectorAll(".page-auth .formulaire").forEach(function (formulaire
 
         const bouton = formulaire.querySelector("[type=submit]");
         const champMotDePasse = formulaire.querySelector("input[type=password]");
-        bouton.disabled = true;
+        bouton.disabled = true;   // évite un double clic pendant l'envoi
 
-        envoyerFormulaireCompte(formulaire).then(function (connecte) {
+        envoyerFormulaireCompte(formulaire).then(function (connecte) {   // réponse de Supabase
             if (connecte) {
-                window.location.href = formulaire.getAttribute("action");
+                window.location.href = formulaire.getAttribute("action");   // connecté : on va au menu
                 return;
             }
             // Confirmation d'email activée dans Supabase
             afficherErreur(champMotDePasse, "Compte créé ! Cliquez sur le lien reçu par email, puis connectez-vous.");
             bouton.disabled = false;
-        }).catch(function (erreur) {
-            afficherErreur(champMotDePasse, ERREURS_COMPTE[erreur.code] || "Erreur : " + erreur.message);
+        }).catch(function (erreur) {   // refusé (mauvais mot de passe, email déjà utilisé...)
+            afficherErreur(champMotDePasse, ERREURS_COMPTE[erreur.code] || "Erreur : " + erreur.message);   // message d'erreur traduit en français
             champMotDePasse.focus();
             bouton.disabled = false;
         });
@@ -825,18 +825,18 @@ if (typeMessagerie) {
     }
 
     function nombreNonLus(cle) {
-        const depuis = vus[cleDe(cle)] || "";
+        const depuis = vus[cleDe(cle)] || "";   // dernière fois que j'ai ouvert cette discussion
         return donnees[cle].messages.filter(function (message) {
-            return message.auteur !== "Moi" && !message.systeme && message.date && message.date > depuis;
+            return message.auteur !== "Moi" && !message.systeme && message.date && message.date > depuis;   // reçu après ma dernière visite = non lu
         }).length;
     }
 
     function marquerVu(cles) {
-        const maintenant = new Date().toISOString();
+        const maintenant = new Date().toISOString();   // date actuelle au format texte
         cles.forEach(function (cle) {
-            vus[cleDe(cle)] = maintenant;
+            vus[cleDe(cle)] = maintenant;   // « vue maintenant » : plus de non lus
         });
-        ecrireStockage(CLE_VUS, vus);
+        ecrireStockage(CLE_VUS, vus);   // gardé dans le navigateur
         afficherListe();
     }
 
@@ -980,17 +980,17 @@ if (typeMessagerie) {
     }
 
     function trier(cles) {
-        return cles.sort(function (a, b) {
-            if (selectTri.value === "nom") {
-                return donnees[a].nom.localeCompare(donnees[b].nom, "fr");
+        return cles.sort(function (a, b) {   // sort compare les discussions deux par deux
+            if (selectTri.value === "nom") {   // tri « Nom (A → Z) »
+                return donnees[a].nom.localeCompare(donnees[b].nom, "fr");   // ordre alphabétique français (É après E)
             }
-            if (selectTri.value === "nonlues") {
-                const ecart = Math.sign(nombreNonLus(b)) - Math.sign(nombreNonLus(a));
+            if (selectTri.value === "nonlues") {   // tri « Non lues d'abord »
+                const ecart = Math.sign(nombreNonLus(b)) - Math.sign(nombreNonLus(a));   // 1 si b a des non lus et pas a
                 if (ecart !== 0) {
                     return ecart;
                 }
             }
-            return dateDernier(b).localeCompare(dateDernier(a));
+            return dateDernier(b).localeCompare(dateDernier(a));   // sinon : le message le plus récent en premier
         });
     }
 
@@ -1306,18 +1306,18 @@ if (typeMessagerie) {
 
         // Applique le réglage « messages éphémères » à un nouveau message
         function appliquerEphemere(message) {
-            const mode = reglageDe(cleStockageOuverte).ephemere;
-            if (!mode || message.systeme) {
+            const mode = reglageDe(cleStockageOuverte).ephemere;   // réglage de la discussion : 0, 60, 3600... ou « lecture »
+            if (!mode || message.systeme) {   // désactivé : le message reste
                 return;
             }
-            if (mode === "lecture") {
+            if (mode === "lecture") {   // « après lecture »
                 if (message.auteur === "Moi") {
                     message.ephemereLecture = true; // le délai démarre quand il sera lu
                 } else {
                     message.expire = Date.now() + DELAI_APRES_LECTURE * 1000; // on est en train de le lire
                 }
             } else {
-                message.expire = Date.now() + mode * 1000;
+                message.expire = Date.now() + mode * 1000;   // sinon : il s'effacera dans « mode » secondes
             }
         }
 
@@ -1656,8 +1656,8 @@ if (typeMessagerie) {
         let selectionMessages = null; // null = pas de sélection, sinon un Set de messages
 
         function commencerSelectionMessages(premier) {
-            selectionMessages = new Set(premier ? [premier] : []);
-            barreMessages.hidden = false;
+            selectionMessages = new Set(premier ? [premier] : []);   // Set : ensemble sans doublon des messages cochés
+            barreMessages.hidden = false;   // affiche la barre Copier / Enregistrer / Supprimer
             afficherSelectionMessages();
         }
 
@@ -1668,10 +1668,10 @@ if (typeMessagerie) {
         }
 
         function basculerMessage(message) {
-            if (selectionMessages.has(message)) {
+            if (selectionMessages.has(message)) {   // déjà coché : on le décoche
                 selectionMessages.delete(message);
             } else {
-                selectionMessages.add(message);
+                selectionMessages.add(message);   // sinon on le coche
             }
             afficherSelectionMessages();
         }
@@ -1785,22 +1785,22 @@ if (typeMessagerie) {
 
         // Petit encadré « Awa : texte cité » ; un clic remonte jusqu'au message
         function creerCitation(sbId) {
-            const cite = MESSAGES_PAR_ID[sbId];
-            const bloc = document.createElement("button");
+            const cite = MESSAGES_PAR_ID[sbId];   // le message cité, retrouvé par son numéro
+            const bloc = document.createElement("button");   // un bouton : cliquer remonte au message
             bloc.type = "button";
             bloc.className = "citation";
             const auteur = document.createElement("strong");
-            auteur.textContent = cite ? (cite.auteur === "Moi" ? "Vous" : cite.auteur) : "Message";
+            auteur.textContent = cite ? (cite.auteur === "Moi" ? "Vous" : cite.auteur) : "Message";   // qui l'avait écrit
             const extrait = document.createElement("span");
-            extrait.textContent = cite ? apercuDe(cite) : "Message indisponible";
+            extrait.textContent = cite ? apercuDe(cite) : "Message indisponible";   // un extrait (ou « Photo », « Message vocal »)
             bloc.append(auteur, extrait);
             bloc.addEventListener("click", function () {
-                const cible = zoneMessages.querySelector('[data-sb-id="' + sbId + '"]');
+                const cible = zoneMessages.querySelector('[data-sb-id="' + sbId + '"]');   // la bulle d'origine dans la page
                 if (cible) {
-                    cible.scrollIntoView({ behavior: "smooth", block: "center" });
+                    cible.scrollIntoView({ behavior: "smooth", block: "center" });   // défilement doux jusqu'à elle
                     cible.classList.remove("surligne");
                     void cible.offsetWidth; // relance l'animation
-                    cible.classList.add("surligne");
+                    cible.classList.add("surligne");   // elle clignote (animation CSS)
                 }
             });
             return bloc;
@@ -1810,14 +1810,14 @@ if (typeMessagerie) {
         let messageEnReponse = null;
 
         function commencerReponse(message) {
-            if (messageEnModification) {
+            if (messageEnModification) {   // on ne peut pas modifier et répondre en même temps
                 annulerModification();
             }
-            messageEnReponse = message;
+            messageEnReponse = message;   // retenu jusqu'à l'envoi (voir envoyerMessage)
             document.getElementById("reponse-auteur").textContent =
                 "Répondre à " + (message.auteur === "Moi" ? "vous-même" : message.auteur);
             document.getElementById("reponse-extrait").textContent = apercuDe(message);
-            bandeauReponse.hidden = false;
+            bandeauReponse.hidden = false;   // affiche « Répondre à ... » au-dessus de la saisie
             champMessage.focus();
         }
 
@@ -1836,11 +1836,11 @@ if (typeMessagerie) {
 
         // Pastilles sous la bulle : « ❤️ 2  😂 »
         function creerReactions(message) {
-            const parEmoji = {};
+            const parEmoji = {};   // { "❤️": [idAwa, idBakary], ... }
             Object.keys(message.reactions || {}).forEach(function (id) {
-                (parEmoji[message.reactions[id]] = parEmoji[message.reactions[id]] || []).push(id);
+                (parEmoji[message.reactions[id]] = parEmoji[message.reactions[id]] || []).push(id);   // on regroupe les personnes par émoji
             });
-            if (Object.keys(parEmoji).length === 0) {
+            if (Object.keys(parEmoji).length === 0) {   // aucune réaction : rien à afficher
                 return null;
             }
 
@@ -1850,9 +1850,9 @@ if (typeMessagerie) {
                 const ids = parEmoji[emoji];
                 const pastille = document.createElement("button");
                 pastille.type = "button";
-                pastille.className = ids.includes(moi) ? "reaction moi" : "reaction";
-                pastille.textContent = emoji + (ids.length > 1 ? " " + ids.length : "");
-                pastille.title = ids.map(function (id) {
+                pastille.className = ids.includes(moi) ? "reaction moi" : "reaction";   // ma réaction est mise en évidence
+                pastille.textContent = emoji + (ids.length > 1 ? " " + ids.length : "");   // « ❤️ 2 » s'il y a plusieurs personnes
+                pastille.title = ids.map(function (id) {   // au survol : qui a réagi
                     return id === moi ? "Vous" : nomDe(id);
                 }).join(", ");
                 // Cliquer sur ma réaction la retire ; sur une autre, je réagis pareil
@@ -1865,22 +1865,22 @@ if (typeMessagerie) {
         }
 
         function basculerReaction(message, emoji) {
-            const avant = message.reactions[moi];
-            const nouvelle = avant === emoji ? null : emoji;
+            const avant = message.reactions[moi];   // ma réaction actuelle (pour pouvoir annuler)
+            const nouvelle = avant === emoji ? null : emoji;   // même émoji : on le retire ; sinon on le met
             if (nouvelle) {
                 message.reactions[moi] = nouvelle;
             } else {
                 delete message.reactions[moi];
             }
-            afficherMessages(false);
-            reagir(message.sbId, nouvelle).catch(function () {
+            afficherMessages(false);   // affichage immédiat
+            reagir(message.sbId, nouvelle).catch(function () {   // enregistré dans la base (donnees.js)
                 if (avant) {
                     message.reactions[moi] = avant;
                 } else {
                     delete message.reactions[moi];
                 }
                 afficherMessages(false);
-                afficherToast("Réaction impossible. Réessayez.");
+                afficherToast("Réaction impossible. Réessayez.");   // échec : on remet comme avant
             });
         }
 
@@ -2070,7 +2070,7 @@ if (typeMessagerie) {
 
         /* ---------- Actions sur un message ---------- */
         function supprimerMessage(message) {
-            const estMoi = message.auteur === "Moi";
+            const estMoi = message.auteur === "Moi";   // on ne supprime pour tous que ses propres messages
             // « à Ali » ou « aux membres du salon »
             const autre = typeMessagerie === "salon" ? "aux membres du salon" : "à " + discussionOuverte.nom;
 
@@ -2081,14 +2081,14 @@ if (typeMessagerie) {
                     : "Le message sera effacé de votre appareil, définitivement. Aucune notification n'est envoyée " + autre + ".",
                 pourTous: estMoi && message.supprime !== "tous"
             }).then(function (choix) {
-                if (choix === "tous") {
-                    modifierMessage(message, Object.assign({ supprime: "tous", masque: false, vueUnique: false }, CONTENU_VIDE));
+                if (choix === "tous") {   // « Pour tout le monde »
+                    modifierMessage(message, Object.assign({ supprime: "tous", masque: false, vueUnique: false }, CONTENU_VIDE));   // vidé chez moi
                     if (message.sbId) {
-                        supprimerPourTous(message.sbId).catch(function () {
+                        supprimerPourTous(message.sbId).catch(function () {   // et dans la base : les autres le voient supprimé
                             afficherToast("Suppression impossible pour les autres. Réessayez.");
                         });
                     }
-                } else if (choix === "moi") {
+                } else if (choix === "moi") {   // « Pour moi » : seulement sur cet appareil
                     effacerPourMoi(message);
                 } else {
                     return;
@@ -2194,13 +2194,13 @@ if (typeMessagerie) {
         });
 
         fenetreVueUnique.addEventListener("close", function () {
-            if (!messageVueUnique) {
+            if (!messageVueUnique) {   // aucun message en cours d'affichage
                 return;
             }
-            modifierMessage(messageVueUnique, Object.assign({ ouvert: true }, CONTENU_VIDE));
+            modifierMessage(messageVueUnique, Object.assign({ ouvert: true }, CONTENU_VIDE));   // contenu effacé de mon écran
             // Message privé : l'expéditeur voit « Ouvert » et le contenu disparaît de la base
             if (typeMessagerie === "contact" && messageVueUnique.sbId) {
-                ouvrirVueUniqueBase(messageVueUnique.sbId);
+                ouvrirVueUniqueBase(messageVueUnique.sbId);   // et de la base (fonction SQL ouvrir_vue_unique)
             }
             messageVueUnique = null;
             contenuVueUnique.innerHTML = "";
@@ -2358,13 +2358,13 @@ if (typeMessagerie) {
         // garderNom : ne pas toucher au champ du nom (le créateur est peut-être en train de le taper)
         function afficherInfosGroupe(garderNom) {
             const groupe = discussionOuverte;
-            const estCreateur = groupe.createurId === moi;
+            const estCreateur = groupe.createurId === moi;   // seul le créateur peut renommer, ajouter, retirer
             const champNom = document.getElementById("infos-nom");
 
             if (!garderNom) {
                 champNom.value = groupe.nom;
-                champNom.readOnly = !estCreateur;
-                document.getElementById("btn-renommer").hidden = !estCreateur;
+                champNom.readOnly = !estCreateur;   // les autres voient le nom sans pouvoir le changer
+                document.getElementById("btn-renommer").hidden = !estCreateur;   // bouton Renommer caché si pas créateur
                 afficherErreur(champNom, "");
             }
             document.getElementById("infos-nombre").textContent = "(" + groupe.membresIds.length + ")";
@@ -2372,18 +2372,18 @@ if (typeMessagerie) {
             // Membres
             const liste = document.getElementById("infos-membres");
             liste.innerHTML = "";
-            groupe.membresIds.forEach(function (id) {
+            groupe.membresIds.forEach(function (id) {   // une ligne par membre
                 const profil = PROFILS[id] || { nom: "Utilisateur" };
                 const personne = Object.assign({ statut: "hors-ligne" }, CONTACTS[id] || profil, { nom: id === moi ? "Vous" : nomDe(id) });
                 let aDroite = null;
-                if (estCreateur && id !== moi) {
+                if (estCreateur && id !== moi) {   // le créateur a un bouton « Retirer » pour les autres
                     aDroite = document.createElement("button");
                     aDroite.type = "button";
                     aDroite.className = "btn btn-secondaire btn-auto";
                     aDroite.textContent = "Retirer";
                     aDroite.addEventListener("click", function () {
                         aDroite.disabled = true;
-                        retirerMembre(cleOuverte, id).then(function () {
+                        retirerMembre(cleOuverte, id).then(function () {   // supprime la ligne dans « salon_membres » (vérifié par la RLS)
                             groupe.membresIds = groupe.membresIds.filter(function (autre) {
                                 return autre !== id;
                             });
@@ -2403,8 +2403,8 @@ if (typeMessagerie) {
             const zoneAjout = document.getElementById("zone-ajout-membres");
             const listeAjout = document.getElementById("infos-ajout");
             listeAjout.innerHTML = "";
-            Object.keys(CONTACTS).forEach(function (id) {
-                if (!CONTACTS[id].estContact || groupe.membresIds.includes(id)) {
+            Object.keys(CONTACTS).forEach(function (id) {   // contacts qu'on peut ajouter au groupe
+                if (!CONTACTS[id].estContact || groupe.membresIds.includes(id)) {   // pas dans mes contacts, ou déjà membre
                     return;
                 }
                 const caseACocher = document.createElement("input");
@@ -2412,7 +2412,7 @@ if (typeMessagerie) {
                 caseACocher.value = id;
                 listeAjout.appendChild(ligneChoix(CONTACTS[id], STATUTS[CONTACTS[id].statut], caseACocher));
             });
-            zoneAjout.hidden = !estCreateur || listeAjout.children.length === 0;
+            zoneAjout.hidden = !estCreateur || listeAjout.children.length === 0;   // zone « Ajouter » réservée au créateur
         }
 
         if (fenetreInfos) {
@@ -2674,16 +2674,16 @@ if (typeMessagerie) {
 
         function notifier() {
             // Discussion en sourdine : aucune notification
-            if (reglageDe(cleStockageOuverte).sourdine) {
+            if (reglageDe(cleStockageOuverte).sourdine) {   // discussion en sourdine : pas de son
                 return;
             }
-            if (parametres.son) {
-                jouerSon();
+            if (parametres.son) {   // son activé dans les paramètres ?
+                jouerSon();   // petit « bip » généré par le navigateur
             }
             // Si l'utilisateur regarde un autre onglet : « (2) Fatou - JokkoChat »
-            if (document.hidden) {
-                nonLus++;
-                document.title = "(" + nonLus + ") " + titrePage;
+            if (document.hidden) {   // l'utilisateur regarde un autre onglet
+                nonLus++;   // un message non lu de plus
+                document.title = "(" + nonLus + ") " + titrePage;   // compteur dans le titre de l'onglet
             }
         }
 
@@ -2697,12 +2697,12 @@ if (typeMessagerie) {
         /* ---------- Temps réel (js/donnees.js) ---------- */
         // Message reçu d'un autre utilisateur
         ecouteurs.message.push(function (type, cle, message) {
-            if (type === typeMessagerie && cle === cleOuverte) {
-                appliquerEphemere(message);
-                retenirEphemere(message);
-                afficherMessages(true);
-                notifier();
-                signalerLecture();
+            if (type === typeMessagerie && cle === cleOuverte) {   // le message est pour la discussion ouverte
+                appliquerEphemere(message);   // messages éphémères : on lui donne une date d'expiration
+                retenirEphemere(message);   // on retient cette date dans le navigateur
+                afficherMessages(true);   // on redessine avec la nouvelle bulle (animée)
+                notifier();   // son + compteur dans l'onglet
+                signalerLecture();   // on prévient l'expéditeur qu'on l'a lu (✓✓ violet)
             }
         });
 
@@ -2710,19 +2710,19 @@ if (typeMessagerie) {
            Discussion ouverte et onglet visible : les messages reçus sont « lus ».
            Paramètre désactivé : on n'envoie rien (et on ne voit pas ceux des autres). */
         function signalerLecture() {
-            if (typeMessagerie !== "contact" || !parametres.accusesLecture || document.hidden) {
+            if (typeMessagerie !== "contact" || !parametres.accusesLecture || document.hidden) {   // seulement en privé, si activé et si l'onglet est visible
                 return;
             }
-            const nonLus = discussionOuverte.messages.filter(function (message) {
+            const nonLus = discussionOuverte.messages.filter(function (message) {   // messages reçus pas encore signalés comme lus
                 return message.auteur !== "Moi" && message.sbId && !message.luParMoi;
             });
-            if (nonLus.length === 0) {
+            if (nonLus.length === 0) {   // rien de nouveau : pas besoin d'appeler la base
                 return;
             }
             nonLus.forEach(function (message) {
-                message.luParMoi = true;
+                message.luParMoi = true;   // on ne les signalera qu'une fois
             });
-            marquerLus(cleOuverte);
+            marquerLus(cleOuverte);   // la base remplit « lu_le » ; l'expéditeur reçoit la mise à jour
         }
 
         signalerLecture();
@@ -2767,49 +2767,49 @@ if (typeMessagerie) {
         });
 
         // Prévenir l'autre personne que j'écris (pas pendant une modification)
-        champMessage.addEventListener("input", function () {
-            if (champMessage.value.trim() !== "" && !messageEnModification) {
-                signalerEcriture(typeMessagerie, cleOuverte);
+        champMessage.addEventListener("input", function () {   // à chaque lettre tapée
+            if (champMessage.value.trim() !== "" && !messageEnModification) {   // champ non vide, et pas en train de modifier
+                signalerEcriture(typeMessagerie, cleOuverte);   // envoie « j'écris » (donnees.js, au plus toutes les 2 s)
             }
         });
 
         /* ---------- Envoi d'un message (texte, image ou vocal) ---------- */
         // contenu : { texte, image } ou { audio, duree }
         function envoyerMessage(contenu) {
-            const message = Object.assign({ auteur: "Moi", heure: heureActuelle(), date: new Date().toISOString(), texte: "", etat: "envoye" }, contenu);
-            if (vueUniqueActive) {
+            const message = Object.assign({ auteur: "Moi", heure: heureActuelle(), date: new Date().toISOString(), texte: "", etat: "envoye" }, contenu);   // nouveau message, état ✓ « envoyé »
+            if (vueUniqueActive) {   // bouton ① activé
                 message.vueUnique = true;
                 activerVueUnique(false); // la vue unique ne vaut que pour un message
             }
-            if (messageEnReponse) {
-                message.reponseA = messageEnReponse.sbId;
+            if (messageEnReponse) {   // on répond à un message
+                message.reponseA = messageEnReponse.sbId;   // numéro du message cité
                 annulerReponse();
             }
             message.reactions = {};
 
-            ajouterMessage(message);
+            ajouterMessage(message);   // ajouté à la discussion
             montrerErreur("");
-            afficherMessages(true);
+            afficherMessages(true);   // affiché tout de suite, sans attendre le serveur
             afficherListe();
 
             // Envoi à Supabase : ✓ en attendant, ✓✓ une fois enregistré
-            enregistrerMessage(typeMessagerie, cleOuverte, message).then(function (ligne) {
-                message.sbId = ligne.id;
+            enregistrerMessage(typeMessagerie, cleOuverte, message).then(function (ligne) {   // envoi à Supabase (donnees.js)
+                message.sbId = ligne.id;   // numéro donné par la base
                 message.id = "sb:" + ligne.id;
                 indexerMessage(message);
                 retenirEphemere(message);
                 message.image = ligne.image_url || message.image;
                 message.audio = ligne.audio_url || message.audio;
-                message.etat = "recu";
+                message.etat = "recu";   // ✓✓ : la base l'a enregistré
                 afficherMessages(false);
-            }).catch(function (erreur) {
+            }).catch(function (erreur) {   // échec (pas de connexion...)
                 console.error(erreur);
-                discussionOuverte.messages = discussionOuverte.messages.filter(function (element) {
+                discussionOuverte.messages = discussionOuverte.messages.filter(function (element) {   // on retire le message de l'écran
                     return element !== message;
                 });
                 afficherMessages(false);
                 afficherListe();
-                montrerErreur("Le message n'a pas pu être envoyé. Vérifiez votre connexion et réessayez.");
+                montrerErreur("Le message n'a pas pu être envoyé. Vérifiez votre connexion et réessayez.");   // et on prévient l'utilisateur
             });
         }
 
@@ -2819,12 +2819,12 @@ if (typeMessagerie) {
         let messageEnModification = null;
 
         function commencerModification(message) {
-            annulerReponse();
-            messageEnModification = message;
+            annulerReponse();   // on ne peut pas répondre et modifier en même temps
+            messageEnModification = message;   // retenu jusqu'à l'envoi
             document.getElementById("texte-avant-modification").textContent = message.texte;
-            bandeauModification.hidden = false;
+            bandeauModification.hidden = false;   // affiche « Modifier le message »
             retirerImage();
-            champMessage.value = message.texte;
+            champMessage.value = message.texte;   // l'ancien texte revient dans la zone de saisie
             champMessage.focus();
         }
 
@@ -2836,18 +2836,18 @@ if (typeMessagerie) {
 
         function terminerModification() {
             const message = messageEnModification;
-            const texte = champMessage.value.trim();
+            const texte = champMessage.value.trim();   // le nouveau texte
             annulerModification();
-            if (texte === "" || texte === message.texte) {
+            if (texte === "" || texte === message.texte) {   // vide ou inchangé : on ne fait rien
                 return;
             }
 
-            const avant = { texte: message.texte, modifie: message.modifie };
-            Object.assign(message, { texte: texte, modifie: true });
+            const avant = { texte: message.texte, modifie: message.modifie };   // copie pour annuler en cas d'échec
+            Object.assign(message, { texte: texte, modifie: true });   // affichage immédiat avec « modifié »
             afficherMessages(false);
             afficherListe();
-            modifierTexte(message.sbId, texte).catch(function () {
-                Object.assign(message, avant);
+            modifierTexte(message.sbId, texte).catch(function () {   // enregistré dans la base ; les autres le reçoivent en direct
+                Object.assign(message, avant);   // échec : on remet l'ancien texte
                 afficherMessages(false);
                 montrerErreur("La modification n'a pas pu être enregistrée. Réessayez.");
             });
@@ -2930,28 +2930,28 @@ if (typeMessagerie) {
             ouvrirEmojis(false);
 
             try {
-                fluxMicro = await navigator.mediaDevices.getUserMedia({ audio: true });
+                fluxMicro = await navigator.mediaDevices.getUserMedia({ audio: true });   // demande l'accès au micro
             } catch (erreur) {
                 montrerErreur("Accès au micro refusé. Autorisez le micro dans le navigateur pour envoyer un vocal.");
                 return;
             }
 
-            morceauxAudio = [];
+            morceauxAudio = [];   // les morceaux de son enregistrés
             enregistrementAnnule = false;
-            enregistreur = new MediaRecorder(fluxMicro);
+            enregistreur = new MediaRecorder(fluxMicro);   // MediaRecorder enregistre le son du micro
             enregistreur.addEventListener("dataavailable", function (evenement) {
                 if (evenement.data.size > 0) {
-                    morceauxAudio.push(evenement.data);
+                    morceauxAudio.push(evenement.data);   // on garde chaque morceau
                 }
             });
-            enregistreur.addEventListener("stop", terminerEnregistrement);
-            enregistreur.start();
+            enregistreur.addEventListener("stop", terminerEnregistrement);   // à l'arrêt : on prépare l'envoi
+            enregistreur.start();   // début de l'enregistrement
 
-            debutEnregistrement = Date.now();
+            debutEnregistrement = Date.now();   // pour afficher la durée
             dureeEnregistrement.textContent = "0:00";
             afficherModeEnregistrement(true);
 
-            minuteurEnregistrement = setInterval(function () {
+            minuteurEnregistrement = setInterval(function () {   // toutes les 250 ms : on met à jour le compteur
                 const secondes = secondesEcoulees();
                 dureeEnregistrement.textContent = formaterDuree(secondes);
                 if (secondes >= DUREE_MAX_VOCAL) {
@@ -2970,14 +2970,14 @@ if (typeMessagerie) {
 
         function terminerEnregistrement() {
             const duree = Math.min(secondesEcoulees(), DUREE_MAX_VOCAL);
-            clearInterval(minuteurEnregistrement);
+            clearInterval(minuteurEnregistrement);   // arrête le compteur
             fluxMicro.getTracks().forEach(function (piste) {
                 piste.stop(); // éteint le micro
             });
             afficherModeEnregistrement(false);
             champMessage.focus();
 
-            if (enregistrementAnnule || morceauxAudio.length === 0) {
+            if (enregistrementAnnule || morceauxAudio.length === 0) {   // annulé (✕ ou Échap) : on n'envoie rien
                 return;
             }
             if (duree < 1) {
@@ -2985,10 +2985,10 @@ if (typeMessagerie) {
                 return;
             }
 
-            const son = new Blob(morceauxAudio, { type: enregistreur.mimeType || "audio/webm" });
+            const son = new Blob(morceauxAudio, { type: enregistreur.mimeType || "audio/webm" });   // les morceaux assemblés en un fichier son
             const lecteurFichier = new FileReader();
-            lecteurFichier.onload = function () {
-                envoyerMessage({ audio: lecteurFichier.result, duree: duree });
+            lecteurFichier.onload = function () {   // une fois le fichier lu en texte (« data URL »)...
+                envoyerMessage({ audio: lecteurFichier.result, duree: duree });   // ...on l'envoie comme un message
             };
             lecteurFichier.readAsDataURL(son);
         }
@@ -3370,11 +3370,11 @@ function indicatifDe(select) {
 
 // Pays dont l'indicatif correspond au début du numéro (le plus long gagne : +221 avant +2)
 function paysDuNumero(numero, positionActuelle) {
-    const numeroChiffres = chiffres(numero);
-    let meilleur = -1;
+    const numeroChiffres = chiffres(numero);   // « +221 77 » -> « 22177 »
+    let meilleur = -1;   // -1 = aucun pays trouvé
     PAYS.forEach(function ([, indicatif], position) {
         const code = chiffres(indicatif);
-        if (numeroChiffres.startsWith(code) && (meilleur === -1 || code.length > chiffres(PAYS[meilleur][1]).length)) {
+        if (numeroChiffres.startsWith(code) && (meilleur === -1 || code.length > chiffres(PAYS[meilleur][1]).length)) {   // le numéro commence par cet indicatif, et c'est le plus long trouvé
             meilleur = position;
         }
     });
@@ -3387,32 +3387,32 @@ function paysDuNumero(numero, positionActuelle) {
 
 // Choisir un pays écrit son indicatif dans le champ Mobile ; taper « +221 » choisit le pays
 function relierPaysMobile(select, champ, numeroDeDepart) {
-    let indicatif = indicatifDe(select);
+    let indicatif = indicatifDe(select);   // indicatif du pays choisi, ex. « +1 »
 
     function placer(numero) {
-        const position = numero ? paysDuNumero(numero, Number(select.value)) : -1;
+        const position = numero ? paysDuNumero(numero, Number(select.value)) : -1;   // numéro existant (profil) : on retrouve son pays
         if (position !== -1) {
             select.value = position;
         }
         indicatif = indicatifDe(select);
-        champ.value = numero || indicatif + " ";
+        champ.value = numero || indicatif + " ";   // sinon le champ commence par l'indicatif
     }
 
-    select.addEventListener("change", function () {
-        const nouveau = indicatifDe(select);
-        const reste = champ.value.trim().startsWith(indicatif)
+    select.addEventListener("change", function () {   // on choisit un autre pays dans la liste
+        const nouveau = indicatifDe(select);   // le nouvel indicatif
+        const reste = champ.value.trim().startsWith(indicatif)   // le numéro sans l'ancien indicatif...
             ? champ.value.trim().slice(indicatif.length).trim()
             : champ.value.trim().replace(/^\+\d*\s*/, "");
-        champ.value = nouveau + " " + reste;
+        champ.value = nouveau + " " + reste;   // ...précédé du nouvel indicatif
         indicatif = nouveau;
         champ.focus();
     });
 
-    champ.addEventListener("input", function () {
-        if (champ.value.trim().startsWith("+")) {
+    champ.addEventListener("input", function () {   // on tape dans le champ Mobile
+        if (champ.value.trim().startsWith("+")) {   // commence par « + » : on reconnaît le pays
             const position = paysDuNumero(champ.value, Number(select.value));
             if (position !== -1 && position !== Number(select.value)) {
-                select.value = position;
+                select.value = position;   // et on le sélectionne dans la liste
                 indicatif = indicatifDe(select);
             }
         }
@@ -3433,13 +3433,13 @@ function numeroSaisi(select, champ) {
 const PREFIXE_QR = "JOKKOCHAT:";
 
 function dessinerMonQr(conteneur) {
-    if (typeof qrcode === "undefined" || !utilisateurConnecte) {
+    if (typeof qrcode === "undefined" || !utilisateurConnecte) {   // librairie pas chargée ou personne connectée
         return;
     }
-    const code = qrcode(0, "M");
-    code.addData(PREFIXE_QR + utilisateurConnecte.id);
-    code.make();
-    conteneur.innerHTML = code.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+    const code = qrcode(0, "M");   // nouveau QR (taille automatique, correction d'erreurs moyenne)
+    code.addData(PREFIXE_QR + utilisateurConnecte.id);   // contenu : « JOKKOCHAT:<mon identifiant> »
+    code.make();   // calcule les carrés noirs et blancs
+    conteneur.innerHTML = code.createSvgTag({ cellSize: 6, margin: 2, scalable: true });   // dessin en SVG dans la page
     conteneur.querySelector("svg").setAttribute("aria-label", "Mon code QR JokkoChat");
 }
 
@@ -3607,22 +3607,22 @@ if (listeContacts) {
 
     // Qui correspond au nom de profil ou au numéro tapé ?
     function personneCherchee() {
-        const pseudo = champPseudoContact.value.trim().replace(/^@/, "").toLowerCase();
-        const numero = chiffres(numeroSaisi(selectPays, champMobile));
+        const pseudo = champPseudoContact.value.trim().replace(/^@/, "").toLowerCase();   // @nomdeprofil tapé, sans le @
+        const numero = chiffres(numeroSaisi(selectPays, champMobile));   // numéro tapé, chiffres seulement (+221 77... -> 22177...)
         if (!pseudo && !numero) {
             return { vide: true };
         }
-        const trouve = function (critere) {
+        const trouve = function (critere) {   // cherche parmi tous les inscrits (sauf moi)
             return Object.keys(PROFILS).find(function (id) {
                 return id !== moi && critere(PROFILS[id]);
             });
         };
-        const parPseudo = pseudo ? trouve(function (profil) { return profil.pseudo === pseudo; }) : null;
-        const parNumero = numero ? trouve(function (profil) { return chiffres(profil.telephone) === numero; }) : null;
-        if (parPseudo && parNumero && parPseudo !== parNumero) {
+        const parPseudo = pseudo ? trouve(function (profil) { return profil.pseudo === pseudo; }) : null;   // par nom de profil
+        const parNumero = numero ? trouve(function (profil) { return chiffres(profil.telephone) === numero; }) : null;   // par numéro
+        if (parPseudo && parNumero && parPseudo !== parNumero) {   // les deux mènent à des personnes différentes
             return { conflit: true };
         }
-        return { id: parPseudo || parNumero || null };
+        return { id: parPseudo || parNumero || null };   // la personne trouvée (ou null)
     }
 
     function afficherIndice() {
@@ -3721,26 +3721,26 @@ if (listeContacts) {
 
     // Lit un code QR dans une image (caméra ou fichier)
     function lireQr(source, largeur, hauteur) {
-        const canvas = document.createElement("canvas");
+        const canvas = document.createElement("canvas");   // zone de dessin invisible
         canvas.width = largeur;
         canvas.height = hauteur;
         const contexte = canvas.getContext("2d", { willReadFrequently: true });
-        contexte.drawImage(source, 0, 0, largeur, hauteur);
-        const code = jsQR(contexte.getImageData(0, 0, largeur, hauteur).data, largeur, hauteur);
-        return code ? code.data : null;
+        contexte.drawImage(source, 0, 0, largeur, hauteur);   // on y copie l'image de la caméra ou du fichier
+        const code = jsQR(contexte.getImageData(0, 0, largeur, hauteur).data, largeur, hauteur);   // jsQR cherche un QR dans les pixels
+        return code ? code.data : null;   // le texte du QR, ou null si aucun
     }
 
     async function codeTrouve(texte) {
-        if (!texte.startsWith(PREFIXE_QR)) {
+        if (!texte.startsWith(PREFIXE_QR)) {   // ce n'est pas un QR JokkoChat
             aideScanner.textContent = "Ce code QR n'est pas un code JokkoChat.";
             return false;
         }
-        const id = texte.slice(PREFIXE_QR.length);
-        if (id === moi) {
+        const id = texte.slice(PREFIXE_QR.length);   // identifiant de la personne (après « JOKKOCHAT: »)
+        if (id === moi) {   // on a scanné son propre code
             aideScanner.textContent = "C'est votre propre code 🙂";
             return false;
         }
-        if (!PROFILS[id]) {
+        if (!PROFILS[id]) {   // profil pas encore chargé : on le demande à la base
             const { data } = await sb.from("profils").select("id, nom, email, bio, pseudo, telephone").eq("id", id).maybeSingle();
             if (!data) {
                 aideScanner.textContent = "Utilisateur introuvable.";
@@ -3748,33 +3748,33 @@ if (listeContacts) {
             }
             PROFILS[id] = data;
         }
-        arreterCamera();
-        ouvrirNouveauContact(PROFILS[id]);
+        arreterCamera();   // on éteint la caméra
+        ouvrirNouveauContact(PROFILS[id]);   // formulaire « Nouveau contact » pré-rempli
         return true;
     }
 
     async function demarrerCamera() {
         aideScanner.textContent = "Placez le code QR dans le cadre.";
         try {
-            fluxCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            fluxCamera = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });   // demande l'accès à la caméra (arrière sur téléphone)
         } catch (erreur) {
             aideScanner.textContent = "Caméra indisponible : importez plutôt une image du code.";
             return;
         }
-        video.srcObject = fluxCamera;
+        video.srcObject = fluxCamera;   // on affiche l'image de la caméra
         await video.play();
 
-        const analyser = async function () {
+        const analyser = async function () {   // analyse image par image
             if (!fluxCamera) {
                 return;
             }
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                const texte = lireQr(video, video.videoWidth, video.videoHeight);
-                if (texte && await codeTrouve(texte)) {
+                const texte = lireQr(video, video.videoWidth, video.videoHeight);   // y a-t-il un QR dans l'image ?
+                if (texte && await codeTrouve(texte)) {   // QR JokkoChat trouvé : on arrête
                     return;
                 }
             }
-            requestAnimationFrame(analyser);
+            requestAnimationFrame(analyser);   // sinon on recommence à l'image suivante
         };
         requestAnimationFrame(analyser);
     }
@@ -4024,21 +4024,21 @@ if (formProfil && utilisateurConnecte) {
 
     function recadrerPhoto(fichier) {
         return new Promise(function (resoudre, rejeter) {
-            if (!fichier.type.startsWith("image/")) {
+            if (!fichier.type.startsWith("image/")) {   // refuse ce qui n'est pas une image
                 rejeter("Ce fichier n'est pas une image.");
                 return;
             }
             const image = new Image();
-            const adresse = URL.createObjectURL(fichier);
+            const adresse = URL.createObjectURL(fichier);   // adresse temporaire pour lire le fichier
             image.onload = function () {
-                const cote = Math.min(image.width, image.height);
+                const cote = Math.min(image.width, image.height);   // le plus grand carré possible
                 const canvas = document.createElement("canvas");
-                canvas.width = 256;
+                canvas.width = 256;   // photo finale : 256 × 256 pixels
                 canvas.height = 256;
                 canvas.getContext("2d").drawImage(image,
-                    (image.width - cote) / 2, (image.height - cote) / 2, cote, cote, 0, 0, 256, 256);
-                URL.revokeObjectURL(adresse);
-                resoudre(canvas.toDataURL("image/jpeg", 0.85));
+                    (image.width - cote) / 2, (image.height - cote) / 2, cote, cote, 0, 0, 256, 256);   // on découpe le carré central et on le réduit
+                URL.revokeObjectURL(adresse);   // libère l'adresse temporaire
+                resoudre(canvas.toDataURL("image/jpeg", 0.85));   // image JPEG (qualité 85 %) prête à être envoyée
             };
             image.onerror = function () {
                 URL.revokeObjectURL(adresse);
