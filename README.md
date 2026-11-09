@@ -6,6 +6,8 @@ JokkoChat est une application de messagerie instantanée Web. Les utilisateurs c
 
 ## Lancer l'application
 
+**Version en ligne : https://derkadiop.github.io/JokkoChat/**
+
 Aucune installation n'est nécessaire : il suffit d'un navigateur récent (Chrome, Firefox, Edge ou Safari) et d'une connexion Internet.
 
 1. Ouvrir le fichier `index.html` dans le navigateur.
