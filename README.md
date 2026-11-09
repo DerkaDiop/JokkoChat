@@ -3,7 +3,7 @@
 ## Description
 
 JokkoChat est une application de messagerie instantanée Web. Les utilisateurs créent un compte, ajoutent des contacts, échangent des messages privés en temps réel et discutent dans des salons publics ou des groupes privés.
-https://derkadiop.github.io/JokkoChat/
+
 
 ## Lancer l'application
 
